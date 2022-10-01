@@ -1,0 +1,12 @@
+{
+  "artifactId": "final-project",
+  "basePackage": "com.student.tkpmnc.finalproject",
+  "apiPackage": "com.student.tkpmnc.finalproject.api",
+  "configPackage": "com.student.tkpmnc.finalproject.api.config",
+  "modelPackage": "com.student.tkpmnc.finalproject.api.model",
+  "delegatePattern": "true",
+  "hideGenerationTimestamp": "true",
+  "useBeanValidation": "true",
+  "dateLibrary": "joda",
+  "sourceFolder": "generated-sources/src/main/java"
+}

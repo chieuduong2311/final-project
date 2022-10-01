@@ -1,0 +1,659 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Swagger Petstore 2.0"
+  termsOfService: "http://swagger.io/terms/"
+  contact:
+    email: "apiteam@swagger.io"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8080"
+tags:
+  - name: "store"
+    description: "Access to Petstore orders"
+  - name: "user"
+    description: "Operations about user"
+  - name: "customer"
+    description: "Customer function"
+  - name: "driver"
+    description: "Driver function"
+  - name: "journey"
+    description: "Journey controller"
+  - name: "vehicle"
+    description: "Vehicle management"
+  - name: "call"
+    description: "Call management"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /customer:
+    post:
+      tags:
+        - customer
+      summary: Create a customer
+      operationId: createCustomer
+      parameters:
+        - name: body
+          in: body
+          description: Create a customer object
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Customer'
+        '400':
+          description: Invalid request
+    get:
+      tags:
+        - customer
+      summary: Get customer by username
+      operationId: getCustomerInfoByPhone
+      parameters:
+        - name: phone
+          in: query
+          description: phone of customer need to update
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Customer'
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer not found
+  /customer/{id}:
+    put:
+      tags:
+        - "customer"
+      summary: "Update a customer"
+      operationId: "updateCustomer"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "id of customer need to update"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          description: "Update a customer object"
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        '200':
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/Customer'
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer not found
+    delete:
+      tags:
+        - customer
+      summary: Update a customer
+      operationId: deleteCustomer
+      parameters:
+        - name: id
+          in: path
+          description: id of customer need to delete
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Deleted user successfully
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer not found
+  /customer/{id}/mostPlaces:
+    get:
+      tags:
+        - customer
+      summary: Get 5 most places
+      operationId: getMostPlaces
+      parameters:
+        - name: id
+          in: path
+          description: id of customer need to query
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Place'
+        '404':
+          description: Customer not found
+  /customer/{id}/recentCalls:
+    get:
+      tags:
+        - customer
+      summary: Get 5 recent calls
+      operationId: getRecentCalls
+      parameters:
+        - name: id
+          in: path
+          description: id of customer need to query
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Call'
+        '404':
+          description: Customer not found
+
+  /driver/{username}:
+    get:
+      tags:
+        - driver
+      summary: Get driver by user name
+      description: ''
+      operationId: getDriverByUsername
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be fetched
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/DriverResponse'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Driver not found
+    put:
+      tags:
+        - driver
+      summary: Update driver
+      description: This can only be done by the logged in user.
+      operationId: updateDriver
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          description: Update an existent driver in application
+          schema:
+            $ref: '#/definitions/Driver'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Driver'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Driver not found
+    delete:
+      tags:
+        - driver
+      summary: Delete driver
+      description: This can only be done by the logged in user.
+      operationId: deleteDriver
+      parameters:
+        - name: username
+          in: path
+          description: The username of user that needs to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Deleted driver successfully
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Driver not found
+  /driver:
+    post:
+      tags:
+        - driver
+      summary: Create new driver
+      operationId: createDriver
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Created driver object
+          schema:
+            $ref: '#/definitions/Driver'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/DriverResponse'
+        '400':
+          description: Invalid request
+
+  /user/login:
+    post:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Provide username and password to login
+          schema:
+            $ref: '#/definitions/LoginInfo'
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Expires-After:
+              description: seconds when token expires
+              type: integer
+              format: int32
+          schema:
+            type: string
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    post:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+
+  /call:
+    post:
+      tags:
+        - call
+      summary: Create new call
+      operationId: createCall
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Created call object
+          schema:
+            $ref: '#/definitions/Call'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Call'
+        '400':
+          description: Invalid request
+
+  /journey:
+    post:
+      tags:
+        - journey
+      summary: Create new journey
+      operationId: createJourney
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Created journey object
+          schema:
+            $ref: '#/definitions/Journey'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Journey'
+        '400':
+          description: Invalid request
+
+  /journey/{id}/cancel:
+    put:
+      tags:
+        - journey
+      summary: Cancel journey
+      description: This can only be done by the logged in user.
+      operationId: cancelJourney
+      parameters:
+        - name: id
+          in: path
+          description: id of journey that need to be cancelled
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          description: Update an existent driver in application
+          schema:
+            $ref: '#/definitions/Reason'
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Journey not found
+  /journey/{id}/finish:
+    put:
+      tags:
+        - journey
+      summary: End journey
+      description: This can only be done by the logged in user.
+      operationId: endJourney
+      parameters:
+        - name: id
+          in: path
+          description: id of journey that need to be finished
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Journey not found
+  /journey/{id}/driver/{driverId}:
+    put:
+      tags:
+        - journey
+      summary: Assign driver to journey
+      description: This can only be done by the logged in user.
+      operationId: assignDriver
+      parameters:
+        - name: id
+          in: path
+          description: id of journey that need to be assigned
+          required: true
+          type: string
+        - name: driverId
+          in: path
+          description: id of driver that need to be assigned
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Journey not found
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: api_key
+    in: header
+
+definitions:
+  Customer:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 100000
+      username:
+        type: string
+        example: fehguy
+      firstName:
+        type: string
+        example: John
+      lastName:
+        type: string
+        example: James
+      email:
+        type: string
+        example: john@email.com
+      password:
+        type: string
+        example: '12345'
+      phone:
+        type: string
+        example: '12345'
+      userType:
+        type: integer
+      userStatus:
+        type: integer
+        description: User Status
+        format: int32
+        example: 1
+    required:
+      - username
+      - firstName
+      - lastName
+      - email
+      - password
+      - phone
+  Place:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      placeId:
+        type: string
+      lat:
+        type: number
+        format: double
+        example: -22.6
+      lng:
+        type: number
+        format: double
+        example: 55.2
+      name:
+        type: string
+        example:
+      fullAddressInString:
+        type: string
+
+  Call:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      customerId:
+        type: integer
+        format: int64
+      phone:
+        type: string
+      callType:
+        $ref: '#/definitions/CallType'
+        example: CALL
+      vehicleType:
+        $ref: '#/definitions/VehicleType'
+      origin:
+        $ref: '#/definitions/Place'
+      destination:
+        $ref: '#/definitions/Place'
+      dateTime:
+        type: integer
+        format: int64
+    required:
+      - customerId
+      - phone
+      - callType
+      - vehicleType
+      - origin
+      - destination
+  Journey:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 1
+      callId:
+        type: integer
+      customerId:
+        type: integer
+      driverId:
+        type: integer
+      status:
+        $ref: '#/definitions/JourneyStatus'
+      reason:
+        type: string
+      rate:
+        type: integer
+      origin:
+        $ref: '#/definitions/Place'
+      destination:
+        $ref: '#/definitions/Place'
+      startDateTime:
+        type: integer
+        format: int64
+      endDateTime:
+        type: integer
+        format: int64
+      price:
+        type: number
+        format: double
+      paymentMethod:
+        $ref: '#/definitions/PaymentMethod'
+  Driver:
+    type: object
+    properties:
+      firstName:
+        type: string
+        example: John
+      lastName:
+        type: string
+        example: James
+      email:
+        type: string
+        example: john@email.com
+      phone:
+        type: string
+        example: '12345'
+      personalId:
+        type: string
+      vehicleInfo:
+        $ref: '#/definitions/Vehicle'
+    required:
+      - username
+      - firstName
+      - lastName
+      - email
+      - password
+      - phone
+      - personalId
+      - vehicleInfo
+
+  DriverResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        example: 100000
+      firstName:
+        type: string
+        example: John
+      lastName:
+        type: string
+        example: James
+      email:
+        type: string
+        example: john@email.com
+      password:
+        type: string
+        example: '12345'
+      phone:
+        type: string
+        example: '12345'
+      userType:
+        type: integer
+      userStatus:
+        type: integer
+        description: User Status
+        format: int32
+        example: 1
+      personalId:
+        type: string
+      overallRate:
+        type: number
+        format: double
+        example: 4.8
+      vehicleInfo:
+        $ref: '#/definitions/Vehicle'
+    required:
+      - username
+      - firstName
+      - lastName
+      - email
+      - password
+      - phone
+      - personalId
+      - vehicleInfo
+
+  Vehicle:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+      controlNumber:
+        type: string
+        example: 51C2-00432
+      type:
+        $ref: '#/definitions/VehicleType'
+    required:
+      - controlNumber
+      - type
+
+  VehicleType:
+    type: string
+    enum:
+      - CAR4
+      - CAR7
+      - BIKE
+  Reason:
+    type: string
+  LoginInfo:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+    required:
+      - username
+      - password
+  JourneyStatus:
+    type: string
+    enum:
+      - COMPLETED
+      - CANCELED
+      - CORRUPTED
+      - INPROGRESS
+  PaymentMethod:
+    type: string
+    enum:
+      - CASH
+      - CARD
+      - EWALLET
+  CallType:
+    type: string
+    enum:
+      - MOBILE_CALL
+      - WEB_APP
