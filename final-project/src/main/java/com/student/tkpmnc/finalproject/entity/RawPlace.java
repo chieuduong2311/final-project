@@ -14,11 +14,11 @@ import javax.persistence.*;
 public class RawPlace {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "place_id")
+    @Column(name = "place_id", nullable = false)
     private String placeId;
 
     @Column(name = "lat")
@@ -27,12 +27,12 @@ public class RawPlace {
     @Column(name = "lng")
     private Double lng;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "place_name")
+    private String placeName;
 
-    @Column(name = "full_address")
+    @Column(name = "full_address", nullable = false)
     private String fullAddressInString;
 
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
 }

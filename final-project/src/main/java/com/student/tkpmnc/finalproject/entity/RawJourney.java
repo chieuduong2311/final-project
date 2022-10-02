@@ -3,7 +3,6 @@ package com.student.tkpmnc.finalproject.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.student.tkpmnc.finalproject.api.model.JourneyStatus;
 import com.student.tkpmnc.finalproject.api.model.PaymentMethod;
-import com.student.tkpmnc.finalproject.api.model.Place;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,25 +16,27 @@ import javax.persistence.*;
 @Table(name = "journey")
 public class RawJourney extends Auditable {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
     @Column(name = "call_id")
     private Long callId;
 
+    @Column(name = "customer_id", nullable = false)
     private Long customerId;
 
     @Column(name = "driver_id")
     private Long driverId;
 
-    @Column(name = "origin")
+    @Column(name = "origin", nullable = false)
     private String origin;
 
-    @Column(name = "destination")
+    @Column(name = "destination", nullable = false)
     private String destination;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private JourneyStatus status;
 
     @Column(name = "rate")

@@ -1,11 +1,8 @@
 package com.student.tkpmnc.finalproject.entity;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.student.tkpmnc.finalproject.api.model.Call;
-import com.student.tkpmnc.finalproject.api.model.Place;
+import com.student.tkpmnc.finalproject.api.model.CallType;
 import com.student.tkpmnc.finalproject.api.model.VehicleType;
 import lombok.*;
-import org.joda.time.DateTime;
 
 import javax.persistence.*;
 
@@ -15,11 +12,12 @@ import javax.persistence.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "call")
+@Table(name = "call_record")
 public class RawCall extends Auditable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "customer_id")
@@ -28,9 +26,9 @@ public class RawCall extends Auditable {
     @Column(name = "phone")
     private String phone;
 
-
     @Column(name = "call_type")
-    private String callType;
+    @Enumerated(EnumType.STRING)
+    private CallType callType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "vehicle_type")
@@ -42,6 +40,6 @@ public class RawCall extends Auditable {
     @Column(name = "destination")
     private String destination;
 
-    @Column(name = "dateTime")
+    @Column(name = "date_time")
     private Long dateTime;
 }

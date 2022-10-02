@@ -14,13 +14,14 @@ import javax.persistence.*;
 public class Location {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
 
-    @Column(name = "customer_id")
+    @Column(name = "customer_id", nullable = false)
     private long customerId;
 
-    @Column(name = "place_id")
+    @Column(name = "place_id", nullable = false)
     private String placeId;
 
     @Column(name = "times")

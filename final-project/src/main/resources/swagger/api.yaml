@@ -459,7 +459,7 @@ definitions:
         type: number
         format: double
         example: 55.2
-      name:
+      placeName:
         type: string
         example:
       fullAddressInString:
