@@ -5,6 +5,7 @@ import com.student.tkpmnc.finalproject.api.model.VehicleType;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Entity
@@ -21,27 +22,27 @@ public class RawCall extends Auditable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "customer_id")
-    private Integer customerId;
+    @Column(name = "customer_id", nullable = false)
+    private Long customerId;
 
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "call_type")
+    @Column(name = "call_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private CallType callType;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "vehicle_type")
+    @Column(name = "vehicle_type", nullable = false)
     private VehicleType vehicleType;
 
-    @Column(name = "origin")
+    @Column(name = "origin", nullable = false)
     private String origin;
 
-    @Column(name = "destination")
+    @Column(name = "destination", nullable = false)
     private String destination;
 
-    @Column(name = "date_time")
+    @Column(name = "date_time", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateTime;
 }

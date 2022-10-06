@@ -464,6 +464,12 @@ definitions:
         example:
       fullAddressInString:
         type: string
+    required:
+      - placeId
+      - lat
+      - lng
+      - placeName
+      - fullAddressInString
 
   Call:
     type: object
@@ -530,6 +536,13 @@ definitions:
         format: double
       paymentMethod:
         $ref: '#/definitions/PaymentMethod'
+    required:
+      - callId
+      - customerId
+      - origin
+      - destination
+      - price
+      - paymentMethod
   Driver:
     type: object
     properties:
