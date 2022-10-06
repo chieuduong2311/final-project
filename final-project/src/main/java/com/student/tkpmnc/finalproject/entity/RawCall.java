@@ -5,6 +5,7 @@ import com.student.tkpmnc.finalproject.api.model.VehicleType;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Data
@@ -41,5 +42,6 @@ public class RawCall extends Auditable {
     private String destination;
 
     @Column(name = "date_time")
-    private Long dateTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateTime;
 }

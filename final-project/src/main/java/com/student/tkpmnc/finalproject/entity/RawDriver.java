@@ -14,12 +14,9 @@ import javax.persistence.*;
 @Table(name = "driver")
 public class RawDriver extends RawUser {
 
-    @Column(name = "personal_id")
+    @Column(name = "personal_id", nullable = false)
     private String personalId;
 
     @Column(name = "overall_rate")
     private Double overallRate;
-
-    @Column(name = "vehicle_id")
-    private long vehicleId;
 }
