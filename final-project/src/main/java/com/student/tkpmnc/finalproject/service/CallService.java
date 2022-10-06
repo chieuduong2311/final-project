@@ -1,14 +1,19 @@
 package com.student.tkpmnc.finalproject.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.ValidationMessage;
 import com.student.tkpmnc.finalproject.api.model.Call;
 import com.student.tkpmnc.finalproject.api.model.Place;
 import com.student.tkpmnc.finalproject.entity.RawCall;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
+import com.student.tkpmnc.finalproject.exception.RequestException;
+import com.student.tkpmnc.finalproject.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.CallRepository;
 import com.student.tkpmnc.finalproject.repository.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 
 @Service
@@ -19,8 +24,15 @@ public class CallService {
     @Autowired
     PlaceRepository placeRepository;
 
+    @Autowired
+    SchemaHelper schemaHelper;
+
 
     public Call createCall(Call request) {
+        if (!schemaHelper.validate("call", request).isEmpty()) {
+            throw new RequestException("Invalid request");
+        }
+
         savePlaceIfNotExisted(request.getDestination());
         savePlaceIfNotExisted(request.getOrigin());
         RawCall record = RawCall.builder()

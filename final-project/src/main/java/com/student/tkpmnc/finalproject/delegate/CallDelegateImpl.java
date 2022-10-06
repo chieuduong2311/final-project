@@ -2,6 +2,7 @@ package com.student.tkpmnc.finalproject.delegate;
 
 import com.student.tkpmnc.finalproject.api.CallApiDelegate;
 import com.student.tkpmnc.finalproject.api.model.Call;
+import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.service.CallService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,11 @@ public class CallDelegateImpl implements CallApiDelegate {
 
     @Override
     public ResponseEntity<Call> createCall(Call body) {
-        return new ResponseEntity<>(callService.createCall(body), HttpStatus.valueOf(200));
+        try {
+            return new ResponseEntity<>(callService.createCall(body), HttpStatus.valueOf(200));
+        } catch (RequestException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 }

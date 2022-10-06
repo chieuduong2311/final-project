@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Call",
+  "description": "Call request",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The unique identifier for a call",
+      "type": ["number", "null"]
+    },
+    "customerId": {
+      "type": "number"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "callType": {
+      "type": "string"
+    },
+    "vehicleType": {
+      "type": "string"
+    },
+    "origin": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": ["integer", "null"]
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        },
+        "placeId": {
+          "type": "string"
+        },
+        "placeName": {
+          "type": "string"
+        },
+        "fullAddressInString": {
+          "type": "string"
+        }
+      }
+    },
+    "destination": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": ["integer", "null"]
+        },
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        },
+        "placeId": {
+          "type": "string"
+        },
+        "placeName": {
+          "type": "string"
+        },
+        "fullAddressInString": {
+          "type": "string"
+        }
+      }
+    },
+    "dateTime": {
+      "type": ["integer", "null"]
+    }
+  },
+  "required": ["customerId", "origin", "destination", "vehicleType", "callType", "phone"]
+}

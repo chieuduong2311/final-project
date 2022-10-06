@@ -76,13 +76,13 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>8.0.28</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/io.rest-assured/json-schema-validator -->
+		<!-- https://mvnrepository.com/artifact/com.networknt/json-schema-validator -->
 		<dependency>
-			<groupId>io.rest-assured</groupId>
+			<groupId>com.networknt</groupId>
 			<artifactId>json-schema-validator</artifactId>
-			<version>4.3.3</version>
-			<scope>test</scope>
+			<version>1.0.66</version>
 		</dependency>
+
 
 	</dependencies>
 
