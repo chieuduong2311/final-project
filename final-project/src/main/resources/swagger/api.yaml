@@ -325,6 +325,29 @@ paths:
         '400':
           description: Invalid request
 
+  /journey/{id}:
+    get:
+      tags:
+        - journey
+      summary: Get journey
+      description: This can only be done by the logged in user.
+      operationId: getJourneyById
+      parameters:
+        - name: id
+          in: path
+          description: id of journey
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Journey'
+        '400':
+          description: Invalid request
+        '404':
+          description: Journey not found
+
   /journey/{id}/cancel:
     put:
       tags:
@@ -341,7 +364,7 @@ paths:
         - name: body
           in: body
           required: true
-          description: Update an existent driver in application
+          description: Cancel an existed journey with reason in application
           schema:
             $ref: '#/definitions/Reason'
       responses:
@@ -395,7 +418,7 @@ paths:
         '400':
           description: Invalid id supplied
         '404':
-          description: Journey not found
+          description: Journey or driver not found
 securityDefinitions:
   api_key:
     type: apiKey
@@ -511,10 +534,13 @@ definitions:
         example: 1
       callId:
         type: integer
+        format: int64
       customerId:
         type: integer
+        format: int64
       driverId:
         type: integer
+        format: int64
       status:
         $ref: '#/definitions/JourneyStatus'
       reason:

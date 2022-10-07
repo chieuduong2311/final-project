@@ -28,8 +28,7 @@ public class SchemaHelper {
         Resource resource = new ClassPathResource(String.format("schema/%s.json", schemaName));
         try {
             InputStream is = resource.getInputStream();
-            JsonSchema jsonSchema = jsonSchemaFactory.getSchema(is);
-            return jsonSchema;
+            return jsonSchemaFactory.getSchema(is);
         } catch (IOException e) {
             throw new RequestException("Cannot validate request");
         }
@@ -38,6 +37,6 @@ public class SchemaHelper {
     public Set<ValidationMessage> validate(String schemaName, Object request) {
         JsonSchema schema = jsonSchema(schemaName);
         var json = objectMapper.convertValue(request, JsonNode.class);
-        return schema.validate( json );
+        return schema.validate(json);
     }
 }

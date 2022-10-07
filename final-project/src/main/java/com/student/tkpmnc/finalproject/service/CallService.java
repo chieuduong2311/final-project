@@ -1,19 +1,16 @@
 package com.student.tkpmnc.finalproject.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.ValidationMessage;
 import com.student.tkpmnc.finalproject.api.model.Call;
-import com.student.tkpmnc.finalproject.api.model.Place;
 import com.student.tkpmnc.finalproject.entity.RawCall;
-import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.exception.RequestException;
+import com.student.tkpmnc.finalproject.helper.PlaceHelper;
 import com.student.tkpmnc.finalproject.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.CallRepository;
 import com.student.tkpmnc.finalproject.repository.PlaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Date;
 
 @Service
@@ -27,14 +24,19 @@ public class CallService {
     @Autowired
     SchemaHelper schemaHelper;
 
+    @Autowired
+    PlaceHelper placeHelper;
 
+    private static final String SCHEMA_NAME = "call";
+
+    @Transactional
     public Call createCall(Call request) {
-        if (!schemaHelper.validate("call", request).isEmpty()) {
+        if (!schemaHelper.validate(SCHEMA_NAME, request).isEmpty()) {
             throw new RequestException("Invalid request");
         }
 
-        savePlaceIfNotExisted(request.getDestination());
-        savePlaceIfNotExisted(request.getOrigin());
+        placeHelper.savePlaceIfNotExisted(request.getDestination());
+        placeHelper.savePlaceIfNotExisted(request.getOrigin());
         RawCall record = RawCall.builder()
                 .callType(request.getCallType())
                 .customerId(request.getCustomerId())
@@ -48,19 +50,5 @@ public class CallService {
         request.id(record.getId());
         request.dateTime(record.getDateTime().getTime());
         return request;
-    }
-
-    private void savePlaceIfNotExisted(Place place) {
-        if (!placeRepository.findFirstByPlaceId(place.getPlaceId()).isPresent()) {
-            RawPlace record = RawPlace.builder()
-                    .placeId(place.getPlaceId())
-                    .lat(place.getLat())
-                    .lng(place.getLng())
-                    .fullAddressInString(place.getFullAddressInString())
-                    .isDeleted(false)
-                    .placeName(place.getPlaceName())
-                    .build();
-            placeRepository.save(record);
-        }
     }
 }

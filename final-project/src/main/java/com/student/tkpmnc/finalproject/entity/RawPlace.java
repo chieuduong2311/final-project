@@ -1,5 +1,6 @@
 package com.student.tkpmnc.finalproject.entity;
 
+import com.student.tkpmnc.finalproject.api.model.Place;
 import lombok.*;
 
 import javax.persistence.*;
@@ -35,4 +36,15 @@ public class RawPlace {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted;
+
+    public Place toPlace() {
+        Place place = new Place();
+        place.setId(this.id);
+        place.setPlaceName(this.placeName);
+        place.setLat(this.lat);
+        place.setLng(this.lng);
+        place.setPlaceId(this.placeId);
+        place.setFullAddressInString(this.fullAddressInString);
+        return place;
+    }
 }
