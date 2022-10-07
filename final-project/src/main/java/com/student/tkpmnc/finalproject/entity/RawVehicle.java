@@ -1,5 +1,6 @@
 package com.student.tkpmnc.finalproject.entity;
 
+import com.student.tkpmnc.finalproject.api.model.Vehicle;
 import com.student.tkpmnc.finalproject.api.model.VehicleType;
 import lombok.*;
 
@@ -26,5 +27,13 @@ public class RawVehicle extends Auditable {
     private VehicleType type;
 
     @Column(name = "driver_id", nullable = false)
-    private long driverId;
+    private Long driverId;
+
+    public Vehicle toVehicle() {
+        Vehicle vehicle = new Vehicle();
+        vehicle.controlNumber(controlNumber)
+                .id(id)
+                .type(type);
+        return vehicle;
+    }
 }

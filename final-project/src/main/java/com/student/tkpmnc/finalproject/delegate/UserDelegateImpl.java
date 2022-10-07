@@ -14,7 +14,7 @@ public class UserDelegateImpl implements UserApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> logoutUser() {
+    public ResponseEntity<Void> logoutUser(String username) {
         return null;
     }
 }

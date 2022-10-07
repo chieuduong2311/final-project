@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Customer",
+  "description": "Customer request",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The unique identifier for a customer",
+      "type": ["number", "null"]
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "username": {
+      "type": "string"
+    },
+    "password": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string",
+      "pattern": "^[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "userType": {
+      "type": ["integer", "null"]
+    },
+    "userStatus": {
+      "type": ["integer", "null"]
+    },
+    "personalId": {
+      "type": "string"
+    },
+    "vehicleInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "controlNumber": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": ["type", "controlNumber"]
+    }
+  },
+  "required": ["firstName", "lastName", "username", "password", "email", "phone", "personalId", "vehicleInfo"]
+}

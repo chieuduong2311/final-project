@@ -173,7 +173,7 @@ paths:
         '200':
           description: successful operation
           schema:
-            $ref: '#/definitions/DriverResponse'
+            $ref: '#/definitions/Driver'
         '400':
           description: Invalid username supplied
         '404':
@@ -241,7 +241,7 @@ paths:
         default:
           description: successful operation
           schema:
-            $ref: '#/definitions/DriverResponse'
+            $ref: '#/definitions/Driver'
         '400':
           description: Invalid request
 
@@ -271,14 +271,19 @@ paths:
             type: string
         '400':
           description: Invalid username/password supplied
-  /user/logout:
+  /user/logout/{username}:
     post:
       tags:
         - user
       summary: Logs out current logged in user session
       description: ''
       operationId: logoutUser
-      parameters: []
+      parameters:
+        - name: username
+          in: path
+          description: The username that needs to be logout
+          required: true
+          type: string
       responses:
         default:
           description: successful operation
@@ -569,42 +574,17 @@ definitions:
       - destination
       - price
       - paymentMethod
-  Driver:
-    type: object
-    properties:
-      firstName:
-        type: string
-        example: John
-      lastName:
-        type: string
-        example: James
-      email:
-        type: string
-        example: john@email.com
-      phone:
-        type: string
-        example: '12345'
-      personalId:
-        type: string
-      vehicleInfo:
-        $ref: '#/definitions/Vehicle'
-    required:
-      - username
-      - firstName
-      - lastName
-      - email
-      - password
-      - phone
-      - personalId
-      - vehicleInfo
 
-  DriverResponse:
+  Driver:
     type: object
     properties:
       id:
         type: integer
         format: int64
         example: 100000
+      username:
+        type: string
+        example: fehguy
       firstName:
         type: string
         example: John

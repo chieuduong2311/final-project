@@ -1,6 +1,8 @@
 package com.student.tkpmnc.finalproject.entity;
 
 
+import com.student.tkpmnc.finalproject.api.model.Driver;
+import com.student.tkpmnc.finalproject.service.DriverService;
 import lombok.*;
 
 import javax.persistence.*;
@@ -19,4 +21,18 @@ public class RawDriver extends RawUser {
 
     @Column(name = "overall_rate")
     private Double overallRate;
+
+    public Driver toDriver() {
+        Driver driver = new Driver();
+        driver.userStatus(getUserStatus())
+                .userType(getUserType())
+                .id(getId())
+                .email(getEmail())
+                .phone(getPhone())
+                .firstName(getFirstName())
+                .lastName(getLastName())
+                .personalId(personalId)
+                .overallRate(overallRate);
+        return driver;
+    }
 }

@@ -41,7 +41,8 @@
         "fullAddressInString": {
           "type": "string"
         }
-      }
+      },
+      "required": ["lat", "lng", "fullAddressInString", "placeName", "placeId"]
     },
     "destination": {
       "type": "object",
@@ -64,7 +65,8 @@
         "fullAddressInString": {
           "type": "string"
         }
-      }
+      },
+      "required": ["lat", "lng", "fullAddressInString", "placeName", "placeId"]
     },
     "dateTime": {
       "type": ["integer", "null"]

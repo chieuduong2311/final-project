@@ -1,5 +1,6 @@
 package com.student.tkpmnc.finalproject.entity;
 
+import com.student.tkpmnc.finalproject.api.model.Call;
 import com.student.tkpmnc.finalproject.api.model.CallType;
 import com.student.tkpmnc.finalproject.api.model.VehicleType;
 import lombok.*;

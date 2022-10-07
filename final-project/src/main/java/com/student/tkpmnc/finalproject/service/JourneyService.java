@@ -2,6 +2,7 @@ package com.student.tkpmnc.finalproject.service;
 
 import com.student.tkpmnc.finalproject.api.model.Journey;
 import com.student.tkpmnc.finalproject.api.model.JourneyStatus;
+import com.student.tkpmnc.finalproject.entity.Location;
 import com.student.tkpmnc.finalproject.entity.RawJourney;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
@@ -19,6 +20,9 @@ public class JourneyService {
 
     @Autowired
     CallRepository callRepository;
+
+    @Autowired
+    LocationRepository locationRepository;
 
     @Autowired
     CustomerRepository customerRepository;
@@ -50,6 +54,10 @@ public class JourneyService {
 
         if (!customerRepository.existsById(request.getCustomerId())) {
             throw new NotFoundException("Customer is not existed");
+        }
+
+        if (!callRepository.existsById(request.getCallId())) {
+            throw new NotFoundException("Call is not existed");
         }
 
         RawJourney journey = RawJourney.builder()
@@ -107,13 +115,28 @@ public class JourneyService {
 
     @Transactional
     public void endJourney(String id) {
-        var journey = journeyRepository.findById(Long.parseLong(id));
-        if (journey.isEmpty()) {
+        var journeyOpt = journeyRepository.findById(Long.parseLong(id));
+        if (journeyOpt.isEmpty()) {
             throw new NotFoundException("Journey is not existed");
         }
-        journey.get().setEndDateTime(new Date().getTime());
-        journey.get().setStatus(JourneyStatus.COMPLETED);
-        journeyRepository.saveAndFlush(journey.get());
+        RawJourney journey = journeyOpt.get();
+        journey.setEndDateTime(new Date().getTime());
+        journey.setStatus(JourneyStatus.COMPLETED);
+        journeyRepository.saveAndFlush(journey);
+
+        var location = locationRepository.findFirstByCustomerIdAndPlaceId(journey.getCustomerId(), journey.getDestination());
+        if (location.isPresent()) {
+            Integer time = location.get().getTimes();
+            location.get().setTimes(time+1);
+            locationRepository.saveAndFlush(location.get());
+        } else {
+            Location record = Location.builder()
+                    .customerId(journey.getCustomerId())
+                    .placeId(journey.getDestination())
+                    .times(1)
+                    .build();
+            locationRepository.saveAndFlush(record);
+        }
     }
 
     @Transactional
