@@ -32,7 +32,7 @@ public class CallService {
     @Transactional
     public Call createCall(Call request) {
         if (!schemaHelper.validate(SCHEMA_NAME, request).isEmpty()) {
-            throw new RequestException("Invalid request");
+            throw new RequestException("Invalid request - missing some required fields");
         }
 
         placeHelper.savePlaceIfNotExisted(request.getDestination());

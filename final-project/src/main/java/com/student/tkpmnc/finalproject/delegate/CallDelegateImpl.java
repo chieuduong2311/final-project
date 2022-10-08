@@ -16,11 +16,6 @@ public class CallDelegateImpl implements CallApiDelegate {
 
     @Override
     public ResponseEntity<Call> createCall(Call body) {
-        try {
-            return new ResponseEntity<>(callService.createCall(body), HttpStatus.OK);
-        } catch (RequestException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-
+        return new ResponseEntity<>(callService.createCall(body), HttpStatus.OK);
     }
 }
