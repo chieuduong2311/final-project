@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface CallRepository extends JpaRepository<RawCall, Long> {
 
-    @Query(value = "select * from call_record c where c.customerId = :customerId order by id desc limit 5", nativeQuery = true)
+    @Query(value = "select * from call_record c where c.customer_id = :customerId order by id desc limit 5", nativeQuery = true)
     List<RawCall> getFiveRecentCallsByCustomerId(Long customerId);
 }

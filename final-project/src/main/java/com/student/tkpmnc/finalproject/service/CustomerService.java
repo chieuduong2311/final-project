@@ -3,9 +3,9 @@ package com.student.tkpmnc.finalproject.service;
 import com.student.tkpmnc.finalproject.api.model.Call;
 import com.student.tkpmnc.finalproject.api.model.Customer;
 import com.student.tkpmnc.finalproject.api.model.Place;
-import com.student.tkpmnc.finalproject.entity.Location;
 import com.student.tkpmnc.finalproject.entity.RawCall;
 import com.student.tkpmnc.finalproject.entity.RawCustomer;
+import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.helper.SchemaHelper;
@@ -96,7 +96,8 @@ public class CustomerService {
 
     @Transactional
     public List<Place> getMostPlaces(String id) {
-        return locationRepository.findFiveMostLocationByCustomerId(Long.parseLong(id));
+        var listRawPlace = placeRepository.findFiveMostLocationByCustomerId(Long.parseLong(id));
+        return listRawPlace.stream().map(RawPlace::toPlace).collect(Collectors.toList());
     }
 
     @Transactional
