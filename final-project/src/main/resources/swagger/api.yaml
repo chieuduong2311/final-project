@@ -51,7 +51,7 @@ paths:
     get:
       tags:
         - customer
-      summary: Get customer by username
+      summary: Get customer by phone
       operationId: getCustomerInfoByPhone
       parameters:
         - name: phone
@@ -68,6 +68,25 @@ paths:
           description: Invalid request
         '404':
           description: Customer not found
+  /customer/register:
+    post:
+      tags:
+        - customer
+      summary: Create a customer
+      operationId: registerCustomer
+      parameters:
+        - name: body
+          in: body
+          description: Create a customer object
+          schema:
+            $ref: '#/definitions/Customer'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Customer'
+        '400':
+          description: Invalid request
   /customer/{id}:
     put:
       tags:
@@ -230,6 +249,26 @@ paths:
         - driver
       summary: Create new driver
       operationId: createDriver
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Created driver object
+          schema:
+            $ref: '#/definitions/Driver'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Driver'
+        '400':
+          description: Invalid request
+  /driver/register:
+    post:
+      tags:
+        - driver
+      summary: Create new driver
+      operationId: registerDriver
       parameters:
         - name: body
           in: body

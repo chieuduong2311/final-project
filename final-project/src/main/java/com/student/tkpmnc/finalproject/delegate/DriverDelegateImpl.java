@@ -30,6 +30,11 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     }
 
     @Override
+    public ResponseEntity<Driver> registerDriver(Driver body) {
+        return new ResponseEntity<>(driverService.createDriver(body), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Driver> updateDriver(String username, Driver body) {
         return new ResponseEntity<>(driverService.updateDriver(username, body), HttpStatus.OK);
     }

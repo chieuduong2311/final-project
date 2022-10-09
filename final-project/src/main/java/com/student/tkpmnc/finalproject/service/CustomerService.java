@@ -90,6 +90,7 @@ public class CustomerService {
                 .email(rawCustomer.getEmail())
                 .firstName(rawCustomer.getFirstName())
                 .lastName(rawCustomer.getLastName())
+                .username(rawCustomer.getUsername())
                 .phone(rawCustomer.getPhone());
         return customer;
     }

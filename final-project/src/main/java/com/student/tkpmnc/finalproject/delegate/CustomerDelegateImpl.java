@@ -45,6 +45,11 @@ public class CustomerDelegateImpl implements CustomerApiDelegate {
     }
 
     @Override
+    public ResponseEntity<Customer> registerCustomer(Customer body) {
+        return new ResponseEntity<>(customerService.createCustomer(body), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Customer> updateCustomer(String id, Customer body) {
         return new ResponseEntity<>(customerService.updateCustomer(id, body), HttpStatus.OK);
     }
