@@ -83,6 +83,9 @@
     },
     "paymentMethod": {
       "type": "string"
+    },
+    "pointCode": {
+      "type": ["string", "null"]
     }
   },
   "required": ["customerId", "callId", "origin", "destination", "paymentMethod"]

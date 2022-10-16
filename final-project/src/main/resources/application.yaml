@@ -12,3 +12,8 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
+
+feign:
+  client:
+    url: https://rsapi.goong.io/DistanceMatrix
+    apiKey: V7uLX09gBrrcesY7zZhSUfr9Hb7AcQ3N0YxM2r1v

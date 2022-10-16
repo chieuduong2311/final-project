@@ -2,6 +2,7 @@ package com.student.tkpmnc.finalproject.delegate;
 
 import com.student.tkpmnc.finalproject.api.DriverApiDelegate;
 import com.student.tkpmnc.finalproject.api.model.Driver;
+import com.student.tkpmnc.finalproject.api.model.DriverLocation;
 import com.student.tkpmnc.finalproject.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,8 @@ public class DriverDelegateImpl implements DriverApiDelegate {
 
     @Override
     public ResponseEntity<Void> deleteDriver(String username) {
-        return null;
+        driverService.deleteDriver(username);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
@@ -32,6 +34,18 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     @Override
     public ResponseEntity<Driver> registerDriver(Driver body) {
         return new ResponseEntity<>(driverService.createDriver(body), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> switchToOnlineDriver(String username) {
+        driverService.switchToOnlineDriver(username);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Void> syncLocation(String username, DriverLocation body) {
+        driverService.syncLocation(username, body);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override

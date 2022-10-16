@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class JourneyService {
@@ -41,6 +42,9 @@ public class JourneyService {
 
     @Autowired
     PlaceHelper placeHelper;
+
+    @Autowired
+    ConcurrentHashMap<String, Boolean> saveLocationFlags;
 
     private static final String SCHEMA_NAME = "journey";
 
@@ -76,6 +80,7 @@ public class JourneyService {
         request.status(JourneyStatus.INPROGRESS)
                 .id(journey.getId())
                 .startDateTime(journey.getStartDateTime());
+        saveLocationFlags.put("isNeeded", Boolean.TRUE);
         return request;
     }
 
@@ -93,6 +98,7 @@ public class JourneyService {
 
         journey.get().setDriverId(driverIdInLong);
         journeyRepository.saveAndFlush(journey.get());
+        saveLocationFlags.put("isNeeded", Boolean.FALSE);
 
     }
 

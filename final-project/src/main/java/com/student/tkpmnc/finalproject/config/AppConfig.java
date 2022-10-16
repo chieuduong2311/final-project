@@ -6,12 +6,11 @@ import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
 public class AppConfig {
 
-    @Primary
     @Bean
     public ObjectMapper om() {
         ObjectMapper om = new ObjectMapper();
@@ -19,10 +18,17 @@ public class AppConfig {
         return om;
     }
 
-    @Primary
     @Bean
     public JsonSchemaFactory factory() {
         return JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+    }
+
+    @Bean
+    public ConcurrentHashMap<String, Boolean> saveLocationFlags() {
+        ConcurrentHashMap<String, Boolean> flags = new ConcurrentHashMap<>();
+        flags.put("isNeeded", Boolean.FALSE);
+        flags.put("isAlreadySaved", Boolean.FALSE);
+        return flags;
     }
 
 }

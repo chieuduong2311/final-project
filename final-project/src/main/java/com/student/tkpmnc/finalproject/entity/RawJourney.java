@@ -58,4 +58,7 @@ public class RawJourney extends Auditable {
     @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
+    @Column(name = "point_code")
+    private String pointCode;
+
 }

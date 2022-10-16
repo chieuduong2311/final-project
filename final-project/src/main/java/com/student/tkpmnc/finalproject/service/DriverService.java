@@ -1,7 +1,7 @@
 package com.student.tkpmnc.finalproject.service;
 
 import com.student.tkpmnc.finalproject.api.model.Driver;
-import com.student.tkpmnc.finalproject.api.model.Vehicle;
+import com.student.tkpmnc.finalproject.api.model.DriverLocation;
 import com.student.tkpmnc.finalproject.entity.RawDriver;
 import com.student.tkpmnc.finalproject.entity.RawVehicle;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class DriverService {
     @Autowired
@@ -24,6 +26,9 @@ public class DriverService {
 
     @Autowired
     SchemaHelper schemaHelper;
+
+    @Autowired
+    ConcurrentHashMap<String, Boolean> saveLocationFlags;
 
     private static final String SCHEMA_NAME = "driver";
 
@@ -52,6 +57,7 @@ public class DriverService {
         rawDriver.setIsDeleted(false);
         rawDriver.setUserStatus(1);
         rawDriver.setUserType(1);
+        rawDriver.setOnline(false);
 
         rawDriver = driverRepository.saveAndFlush(rawDriver);
 
@@ -135,6 +141,32 @@ public class DriverService {
                 .userType(rawDriver.getUserType())
                 .userStatus(rawDriver.getUserStatus());
         return request;
+    }
+
+    @Transactional
+    public void switchToOnlineDriver(String username) {
+        var rawDriverOpt = driverRepository.findFirstByUsername(username);
+        if (rawDriverOpt.isEmpty()) {
+            throw new NotFoundException("Driver is not found");
+        }
+
+        rawDriverOpt.get().setOnline(true);
+        driverRepository.saveAndFlush(rawDriverOpt.get());
+    }
+
+    @Transactional
+    public void syncLocation(String username, DriverLocation location) {
+        if (saveLocationFlags.get("isNeeded")) {
+            var rawDriverOpt = driverRepository.findFirstByUsername(username);
+            if (rawDriverOpt.isEmpty()) {
+                throw new NotFoundException("Driver is not found");
+            }
+
+            rawDriverOpt.get().setCurrentLat(location.getLat());
+            rawDriverOpt.get().setCurrentLng(location.getLng());
+            driverRepository.saveAndFlush(rawDriverOpt.get());
+//            saveLocationFlags.put("isAlreadySaved", Boolean.TRUE);
+        }
     }
 
 }

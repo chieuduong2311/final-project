@@ -2,7 +2,7 @@ swagger: "2.0"
 info:
   description: ""
   version: "1.0.0"
-  title: "Swagger Petstore 2.0"
+  title: "Swagger Booking Service 2.0"
   termsOfService: "http://swagger.io/terms/"
   contact:
     email: "apiteam@swagger.io"
@@ -11,8 +11,6 @@ info:
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
 host: "localhost:8080"
 tags:
-  - name: "store"
-    description: "Access to Petstore orders"
   - name: "user"
     description: "Operations about user"
   - name: "customer"
@@ -224,6 +222,25 @@ paths:
           description: Invalid username supplied
         '404':
           description: Driver not found
+    post:
+      tags:
+        - driver
+      summary: Toggle online status
+      description: This can only be done by the logged in user.
+      operationId: switchToOnlineDriver
+      parameters:
+        - name: username
+          in: path
+          description: The username of user that needs to be turn on
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Update successfully
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: Driver not found
     delete:
       tags:
         - driver
@@ -281,6 +298,29 @@ paths:
           description: successful operation
           schema:
             $ref: '#/definitions/Driver'
+        '400':
+          description: Invalid request
+  /driver/sync-location/{username}:
+    post:
+      tags:
+        - driver
+      summary: Update current location
+      operationId: syncLocation
+      parameters:
+        - name: username
+          in: path
+          description: The driver's username that needs to be sync
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          description: Current lat and long of driver
+          schema:
+            $ref: '#/definitions/DriverLocation'
+      responses:
+        '200':
+          description: Sync successfully
         '400':
           description: Invalid request
 
@@ -606,6 +646,8 @@ definitions:
         format: double
       paymentMethod:
         $ref: '#/definitions/PaymentMethod'
+      pointCode:
+        type: string
     required:
       - callId
       - customerId
@@ -663,6 +705,19 @@ definitions:
       - phone
       - personalId
       - vehicleInfo
+
+  DriverLocation:
+    type: object
+    properties:
+      lat:
+        type: number
+        format: double
+      lng:
+        type: number
+        format: double
+    required:
+      - lat
+      - lng
 
   Vehicle:
     type: object
