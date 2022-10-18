@@ -9,6 +9,7 @@ import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.DriverRepository;
 import com.student.tkpmnc.finalproject.repository.VehicleRepository;
+import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class DriverService {
     SchemaHelper schemaHelper;
 
     @Autowired
-    ConcurrentHashMap<String, Boolean> saveLocationFlags;
+    ConcurrentHashMap<Long, DriverLocationFlag> driverLocationMap;
 
     private static final String SCHEMA_NAME = "driver";
 
@@ -75,12 +76,14 @@ public class DriverService {
     }
 
     @Transactional
-    public void deleteDriver(String username) {
-        var rawDriverOpt = driverRepository.findFirstByUsername(username);
+    public void deleteDriver(String id) {
+        Long idInLong = Long.parseLong(id);
+        var rawDriverOpt = driverRepository.findById(idInLong);
         if (rawDriverOpt.isEmpty()) {
             throw new NotFoundException("Driver is not found");
         }
-        driverRepository.deleteCustomerByUsername(username);
+        rawDriverOpt.get().setIsDeleted(true);
+        driverRepository.saveAndFlush(rawDriverOpt.get());
     }
 
     @Transactional
@@ -95,12 +98,28 @@ public class DriverService {
             throw new NotFoundException("Driver's vehicle is not found");
         }
         driver.vehicleInfo(vehicleOpt.get().toVehicle());
-        return  driver;
+        return driver;
     }
 
     @Transactional
-    public Driver updateDriver(String username, Driver request) {
-        var rawDriverOpt = driverRepository.findFirstByUsername(username);
+    public Driver getDriverByPhone(String phone) {
+        var rawDriverOpt = driverRepository.findFirstByPhone(phone);
+        if (rawDriverOpt.isEmpty()) {
+            throw new NotFoundException("Driver is not found");
+        }
+        Driver driver = rawDriverOpt.get().toDriver();
+        var vehicleOpt = vehicleRepository.findFirstByDriverId(rawDriverOpt.get().getId());
+        if (vehicleOpt.isEmpty()) {
+            throw new NotFoundException("Driver's vehicle is not found");
+        }
+        driver.vehicleInfo(vehicleOpt.get().toVehicle());
+        return driver;
+    }
+
+    @Transactional
+    public Driver updateDriver(String id, Driver request) {
+        Long idInLong = Long.parseLong(id);
+        var rawDriverOpt = driverRepository.findById(idInLong);
         if (rawDriverOpt.isEmpty()) {
             throw new NotFoundException("Driver is not found");
         }
@@ -110,6 +129,10 @@ public class DriverService {
 
         if (driverRepository.findFirstByPhone(request.getPhone()).isPresent()) {
             throw new RequestException("This phone is belonged to another driver, invalid request");
+        }
+
+        if (driverRepository.findFirstByUsername(request.getUsername()).isPresent()) {
+            throw new RequestException("This username is belonged to another driver, invalid request");
         }
 
         //prevent updating username
@@ -144,8 +167,9 @@ public class DriverService {
     }
 
     @Transactional
-    public void switchToOnlineDriver(String username) {
-        var rawDriverOpt = driverRepository.findFirstByUsername(username);
+    public void switchToOnlineDriver(String id) {
+        Long idInLong = Long.parseLong(id);
+        var rawDriverOpt = driverRepository.findById(idInLong);
         if (rawDriverOpt.isEmpty()) {
             throw new NotFoundException("Driver is not found");
         }
@@ -155,18 +179,28 @@ public class DriverService {
     }
 
     @Transactional
-    public void syncLocation(String username, DriverLocation location) {
-        if (saveLocationFlags.get("isNeeded")) {
-            var rawDriverOpt = driverRepository.findFirstByUsername(username);
-            if (rawDriverOpt.isEmpty()) {
-                throw new NotFoundException("Driver is not found");
-            }
-
-            rawDriverOpt.get().setCurrentLat(location.getLat());
-            rawDriverOpt.get().setCurrentLng(location.getLng());
-            driverRepository.saveAndFlush(rawDriverOpt.get());
-//            saveLocationFlags.put("isAlreadySaved", Boolean.TRUE);
+    public void switchToOfflineDriver(String id) {
+        Long idInLong = Long.parseLong(id);
+        var rawDriverOpt = driverRepository.findById(idInLong);
+        if (rawDriverOpt.isEmpty()) {
+            throw new NotFoundException("Driver is not found");
         }
+
+        rawDriverOpt.get().setOnline(false);
+        driverRepository.saveAndFlush(rawDriverOpt.get());
+        if (driverLocationMap.get(idInLong) != null) {
+            driverLocationMap.get(idInLong).setOnline(false);
+        }
+    }
+
+    public void syncLocation(String id, DriverLocation location) {
+        Long idInLong = Long.parseLong(id);
+        var flag = DriverLocationFlag.builder()
+                .id(idInLong)
+                .driverLocation(location)
+                .isOnline(true)
+                .build();
+        driverLocationMap.put(idInLong, flag);
     }
 
 }

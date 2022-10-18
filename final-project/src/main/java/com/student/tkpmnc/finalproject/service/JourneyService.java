@@ -4,17 +4,24 @@ import com.student.tkpmnc.finalproject.api.model.Journey;
 import com.student.tkpmnc.finalproject.api.model.JourneyStatus;
 import com.student.tkpmnc.finalproject.entity.Location;
 import com.student.tkpmnc.finalproject.entity.RawJourney;
+import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
+import com.student.tkpmnc.finalproject.feign.DistanceMatrixApi;
+import com.student.tkpmnc.finalproject.feign.DistanceResponse;
 import com.student.tkpmnc.finalproject.helper.PlaceHelper;
 import com.student.tkpmnc.finalproject.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
+import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class JourneyService {
@@ -44,7 +51,13 @@ public class JourneyService {
     PlaceHelper placeHelper;
 
     @Autowired
-    ConcurrentHashMap<String, Boolean> saveLocationFlags;
+    ConcurrentHashMap<Long, DriverLocationFlag> driverLocationMap;
+
+    @Autowired
+    private SimpMessagingTemplate template;
+
+    @Autowired
+    private DistanceMatrixApi distanceMatrixApi;
 
     private static final String SCHEMA_NAME = "journey";
 
@@ -67,7 +80,6 @@ public class JourneyService {
         RawJourney journey = RawJourney.builder()
                 .callId(request.getCallId())
                 .customerId(request.getCustomerId())
-                .driverId(request.getDriverId())
                 .destination(request.getDestination().getPlaceId())
                 .origin(request.getOrigin().getPlaceId())
                 .status(JourneyStatus.INPROGRESS)
@@ -80,7 +92,6 @@ public class JourneyService {
         request.status(JourneyStatus.INPROGRESS)
                 .id(journey.getId())
                 .startDateTime(journey.getStartDateTime());
-        saveLocationFlags.put("isNeeded", Boolean.TRUE);
         return request;
     }
 
@@ -98,8 +109,6 @@ public class JourneyService {
 
         journey.get().setDriverId(driverIdInLong);
         journeyRepository.saveAndFlush(journey.get());
-        saveLocationFlags.put("isNeeded", Boolean.FALSE);
-
     }
 
     @Transactional
@@ -175,5 +184,47 @@ public class JourneyService {
                 .price(rawJourney.getPrice())
                 .paymentMethod(rawJourney.getPaymentMethod());
         return journey;
+    }
+
+    @Transactional
+    public void findDriver(String id) {
+        var journeyId = Long.parseLong(id);
+        var journey = journeyRepository.findById(journeyId);
+        if (journey.isEmpty()) {
+            throw new NotFoundException("Journey is not existed");
+        }
+        RawPlace origin = placeRepository.findFirstByPlaceId(journey.get().getOrigin()).orElseThrow(() -> new NotFoundException("Place does not exist"));
+        String originString = String.join(",", origin.getLat().toString() ,origin.getLng().toString());
+
+        //generate destination string
+        List<DriverLocationFlag> driverLocationFlagList = driverLocationMap.values()
+                .stream().filter(driverLocationFlag -> driverLocationFlag.isOnline())
+                .collect(Collectors.toList());
+        List<String> driverLocationList = driverLocationFlagList.stream()
+                .map(flag -> flag.getDriverLocation())
+                .map(location -> String.join(",", location.getLat().toString(), location.getLng().toString()))
+                .collect(Collectors.toList());
+        String destinationString = String.join("|", driverLocationList);
+        System.out.println("-------destination string: " + destinationString);
+        DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString);
+        System.out.println("------------distance response" + response.toString());
+
+        int minIdx = 0;
+        var listElement = response.getRows().get(0).getElements();
+        for (int i = 0; i < listElement.size(); i++) {
+            if (listElement.get(i).getDistance().getValue() < listElement.get(minIdx).getDistance().getValue()) {
+                minIdx = i;
+            }
+        }
+
+        String minLocation = driverLocationList.get(minIdx);
+
+        DriverLocationFlag res = driverLocationFlagList.stream().filter(f -> {
+            String desString = String.join(",", f.getDriverLocation().getLat().toString(), f.getDriverLocation().getLng().toString());
+            return minLocation.equals(desString);
+        }).findAny().get();
+
+        journey.get().setDriverId(res.getId());
+        template.convertAndSend("/topic/message", toJourney(journey.get()));
     }
 }

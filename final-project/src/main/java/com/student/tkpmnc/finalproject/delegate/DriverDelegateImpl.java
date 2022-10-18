@@ -21,14 +21,14 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> deleteDriver(String username) {
-        driverService.deleteDriver(username);
+    public ResponseEntity<Void> deleteDriver(String id) {
+        driverService.deleteDriver(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Driver> getDriverByUsername(String username) {
-        return new ResponseEntity<>(driverService.getDriverByUsername(username), HttpStatus.OK);
+    public ResponseEntity<Driver> getDriverInfoByPhone(String phone) {
+        return new ResponseEntity<>(driverService.getDriverByPhone(phone), HttpStatus.OK);
     }
 
     @Override
@@ -37,19 +37,25 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     }
 
     @Override
-    public ResponseEntity<Void> switchToOnlineDriver(String username) {
-        driverService.switchToOnlineDriver(username);
+    public ResponseEntity<Void> switchToOfflineDriver(String id) {
+        driverService.switchToOfflineDriver(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Void> syncLocation(String username, DriverLocation body) {
-        driverService.syncLocation(username, body);
+    public ResponseEntity<Void> switchToOnlineDriver(String id) {
+        driverService.switchToOnlineDriver(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<Driver> updateDriver(String username, Driver body) {
-        return new ResponseEntity<>(driverService.updateDriver(username, body), HttpStatus.OK);
+    public ResponseEntity<Void> syncLocation(String id, DriverLocation body) {
+        driverService.syncLocation(id, body);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Driver> updateDriver(String id, Driver body) {
+        return new ResponseEntity<>(driverService.updateDriver(id, body), HttpStatus.OK);
     }
 }

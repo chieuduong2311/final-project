@@ -38,6 +38,12 @@ public class JourneyDelegateImpl implements JourneyApiDelegate {
     }
 
     @Override
+    public ResponseEntity<Void> findDriver(String id) {
+        journeyService.findDriver(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Journey> getJourneyById(String id) {
         return new ResponseEntity<>(journeyService.getJourneyById(id), HttpStatus.OK);
     }
