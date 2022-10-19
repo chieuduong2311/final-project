@@ -8,7 +8,7 @@ import com.student.tkpmnc.finalproject.entity.RawCustomer;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
-import com.student.tkpmnc.finalproject.helper.SchemaHelper;
+import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;

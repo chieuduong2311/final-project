@@ -20,4 +20,10 @@ public class RestExceptionHandler {
     public ErrorResponse handleRequestException(WebRequest request, Exception e) {
         return ErrorResponse.builder().errorMessage(e.getMessage()).build();
     }
+
+    @ExceptionHandler({ NoAvailableDriverException.class })
+    @ResponseStatus(code = HttpStatus.SERVICE_UNAVAILABLE)
+    public ErrorResponse handleNoAvailableDriverException(WebRequest request, Exception e) {
+        return ErrorResponse.builder().errorMessage(e.getMessage()).build();
+    }
 }

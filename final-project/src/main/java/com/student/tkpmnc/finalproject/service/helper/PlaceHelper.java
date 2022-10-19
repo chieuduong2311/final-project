@@ -1,4 +1,4 @@
-package com.student.tkpmnc.finalproject.helper;
+package com.student.tkpmnc.finalproject.service.helper;
 
 import com.student.tkpmnc.finalproject.api.model.Place;
 import com.student.tkpmnc.finalproject.entity.RawPlace;

@@ -1,4 +1,4 @@
-package com.student.tkpmnc.finalproject.feign;
+package com.student.tkpmnc.finalproject.feign.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

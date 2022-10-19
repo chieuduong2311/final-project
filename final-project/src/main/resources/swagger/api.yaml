@@ -220,6 +220,26 @@ paths:
           description: Invalid username supplied
         '404':
           description: Driver not found
+    get:
+      tags:
+        - driver
+      summary: Get driver by id
+      operationId: getDriverInfoById
+      parameters:
+        - name: id
+          in: path
+          description: The id of driver that needs to query
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Driver'
+        '400':
+          description: Invalid request
+        '404':
+          description: Driver not found
   /driver:
     post:
       tags:

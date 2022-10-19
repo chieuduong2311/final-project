@@ -27,6 +27,11 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     }
 
     @Override
+    public ResponseEntity<Driver> getDriverInfoById(String id) {
+        return new ResponseEntity<>((driverService.getDriverById(id)), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Driver> getDriverInfoByPhone(String phone) {
         return new ResponseEntity<>(driverService.getDriverByPhone(phone), HttpStatus.OK);
     }

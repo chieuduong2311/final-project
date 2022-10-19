@@ -5,23 +5,23 @@ import com.student.tkpmnc.finalproject.api.model.JourneyStatus;
 import com.student.tkpmnc.finalproject.entity.Location;
 import com.student.tkpmnc.finalproject.entity.RawJourney;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
+import com.student.tkpmnc.finalproject.exception.NoAvailableDriverException;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.feign.DistanceMatrixApi;
-import com.student.tkpmnc.finalproject.feign.DistanceResponse;
-import com.student.tkpmnc.finalproject.helper.PlaceHelper;
-import com.student.tkpmnc.finalproject.helper.SchemaHelper;
+import com.student.tkpmnc.finalproject.feign.dto.DistanceResponse;
+import com.student.tkpmnc.finalproject.service.helper.PlaceHelper;
+import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 public class JourneyService {
@@ -58,6 +58,12 @@ public class JourneyService {
 
     @Autowired
     private DistanceMatrixApi distanceMatrixApi;
+
+    @Value("${feign.client.apiKey}")
+    private String API_KEY;
+
+    @Value("${project.config.maxDistance}")
+    private Long MAX_DISTANCE;
 
     private static final String SCHEMA_NAME = "journey";
 
@@ -196,35 +202,22 @@ public class JourneyService {
         RawPlace origin = placeRepository.findFirstByPlaceId(journey.get().getOrigin()).orElseThrow(() -> new NotFoundException("Place does not exist"));
         String originString = String.join(",", origin.getLat().toString() ,origin.getLng().toString());
 
-        //generate destination string
-        List<DriverLocationFlag> driverLocationFlagList = driverLocationMap.values()
-                .stream().filter(driverLocationFlag -> driverLocationFlag.isOnline())
-                .collect(Collectors.toList());
-        List<String> driverLocationList = driverLocationFlagList.stream()
-                .map(flag -> flag.getDriverLocation())
-                .map(location -> String.join(",", location.getLat().toString(), location.getLng().toString()))
-                .collect(Collectors.toList());
-        String destinationString = String.join("|", driverLocationList);
-        System.out.println("-------destination string: " + destinationString);
-        DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString);
-        System.out.println("------------distance response" + response.toString());
-
-        int minIdx = 0;
-        var listElement = response.getRows().get(0).getElements();
-        for (int i = 0; i < listElement.size(); i++) {
-            if (listElement.get(i).getDistance().getValue() < listElement.get(minIdx).getDistance().getValue()) {
-                minIdx = i;
+        Long closestDriverId = -1L;
+        Long closestDistance = MAX_DISTANCE;
+        for (DriverLocationFlag flag : driverLocationMap.values()) {
+            String destinationString = String.join(",", flag.getDriverLocation().getLat().toString(), flag.getDriverLocation().getLng().toString());
+            DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString, API_KEY);
+            if (closestDistance > response.getRows().get(0).getElements().get(0).getDistance().getValue()) {
+                closestDistance = response.getRows().get(0).getElements().get(0).getDistance().getValue();
+                closestDriverId = flag.getId();
             }
         }
 
-        String minLocation = driverLocationList.get(minIdx);
+        if (closestDriverId == -1L) {
+            throw new NoAvailableDriverException("Cannot find any available drivers now.");
+        }
 
-        DriverLocationFlag res = driverLocationFlagList.stream().filter(f -> {
-            String desString = String.join(",", f.getDriverLocation().getLat().toString(), f.getDriverLocation().getLng().toString());
-            return minLocation.equals(desString);
-        }).findAny().get();
-
-        journey.get().setDriverId(res.getId());
+        journey.get().setDriverId(closestDriverId);
         template.convertAndSend("/topic/message", toJourney(journey.get()));
     }
 }

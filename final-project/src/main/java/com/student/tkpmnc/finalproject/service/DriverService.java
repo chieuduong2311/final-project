@@ -6,7 +6,7 @@ import com.student.tkpmnc.finalproject.entity.RawDriver;
 import com.student.tkpmnc.finalproject.entity.RawVehicle;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
-import com.student.tkpmnc.finalproject.helper.SchemaHelper;
+import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.DriverRepository;
 import com.student.tkpmnc.finalproject.repository.VehicleRepository;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
@@ -87,8 +87,9 @@ public class DriverService {
     }
 
     @Transactional
-    public Driver getDriverByUsername(String username) {
-        var rawDriverOpt = driverRepository.findFirstByUsername(username);
+    public Driver getDriverById(String id) {
+        Long idInLong = Long.parseLong(id);
+        var rawDriverOpt = driverRepository.findById(idInLong);
         if (rawDriverOpt.isEmpty()) {
             throw new NotFoundException("Driver is not found");
         }
