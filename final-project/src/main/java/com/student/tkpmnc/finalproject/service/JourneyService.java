@@ -205,6 +205,9 @@ public class JourneyService {
         Long closestDriverId = -1L;
         Long closestDistance = MAX_DISTANCE;
         for (DriverLocationFlag flag : driverLocationMap.values()) {
+            if (!flag.isOnline()) {
+                continue;
+            }
             String destinationString = String.join(",", flag.getDriverLocation().getLat().toString(), flag.getDriverLocation().getLng().toString());
             DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString, API_KEY);
             if (closestDistance > response.getRows().get(0).getElements().get(0).getDistance().getValue()) {
