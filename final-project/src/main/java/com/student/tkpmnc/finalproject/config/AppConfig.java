@@ -5,9 +5,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.student.tkpmnc.finalproject.api.model.DriverLocation;
+import com.student.tkpmnc.finalproject.service.UserService;
+import com.student.tkpmnc.finalproject.service.dto.AuthUserType;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
+import com.student.tkpmnc.finalproject.service.impl.CustomerUserServiceImpl;
+import com.student.tkpmnc.finalproject.service.impl.DriverUserServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 @Configuration
@@ -23,6 +30,19 @@ public class AppConfig {
     @Bean
     public JsonSchemaFactory factory() {
         return JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+    }
+
+    @Bean
+    public PasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public ConcurrentHashMap<String, Boolean> authServiceConfig(){
+        ConcurrentHashMap<String, Boolean> map = new ConcurrentHashMap<>();
+        map.put(AuthUserType.CUSTOMER.getDetails(), Boolean.TRUE);
+        map.put(AuthUserType.DRIVER.getDetails(), Boolean.FALSE);
+        return map;
     }
 
     @Bean

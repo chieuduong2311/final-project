@@ -21,3 +21,5 @@ feign:
 project:
   config:
     maxDistance: 5000
+    jwt:
+      key: 20880020_20880230_booking_app

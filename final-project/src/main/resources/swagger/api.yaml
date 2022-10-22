@@ -372,6 +372,11 @@ paths:
       description: ''
       operationId: loginUser
       parameters:
+        - name: type
+          in: header
+          description: type of user need to login
+          required: true
+          type: string
         - name: body
           in: body
           required: true
@@ -388,7 +393,7 @@ paths:
               format: int32
           schema:
             type: string
-        '400':
+        '401':
           description: Invalid username/password supplied
   /user/logout/{username}:
     post:

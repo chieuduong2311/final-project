@@ -12,6 +12,7 @@ import com.student.tkpmnc.finalproject.repository.VehicleRepository;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,9 @@ public class DriverService {
 
     @Autowired
     SchemaHelper schemaHelper;
+
+    @Autowired
+    private PasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     ConcurrentHashMap<Long, DriverLocationFlag> driverLocationMap;
@@ -53,7 +57,7 @@ public class DriverService {
         rawDriver.setFirstName(request.getFirstName());
         rawDriver.setLastName(request.getLastName());
         rawDriver.setUsername(request.getUsername());
-        String pw = DigestUtils.sha256Hex(request.getPassword());
+        String pw = bCryptPasswordEncoder.encode(request.getPassword());
         rawDriver.setPassword(pw);
         rawDriver.setIsDeleted(false);
         rawDriver.setUserStatus(1);
@@ -190,12 +194,16 @@ public class DriverService {
         rawDriverOpt.get().setOnline(false);
         driverRepository.saveAndFlush(rawDriverOpt.get());
         if (driverLocationMap.get(idInLong) != null) {
-            driverLocationMap.get(idInLong).setOnline(false);
+            driverLocationMap.remove(idInLong);
         }
     }
 
     public void syncLocation(String id, DriverLocation location) {
         Long idInLong = Long.parseLong(id);
+        if (driverLocationMap.containsKey(idInLong)) {
+            driverLocationMap.get(idInLong).setDriverLocation(location);
+            return;
+        }
         var flag = DriverLocationFlag.builder()
                 .id(idInLong)
                 .driverLocation(location)

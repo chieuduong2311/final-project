@@ -12,6 +12,8 @@ import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +37,9 @@ public class CustomerService {
 
     @Autowired
     DriverRepository driverRepository;
+
+    @Autowired
+    private PasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     SchemaHelper schemaHelper;
@@ -62,7 +67,7 @@ public class CustomerService {
         rawCustomer.setPhone(request.getPhone());
         rawCustomer.setFirstName(request.getFirstName());
         rawCustomer.setLastName(request.getFirstName());
-        String pw = DigestUtils.sha256Hex(request.getPassword());
+        String pw = bCryptPasswordEncoder.encode(request.getPassword());
         rawCustomer.setPassword(pw);
         rawCustomer.setUserStatus(1);
         rawCustomer.setUserType(1);
