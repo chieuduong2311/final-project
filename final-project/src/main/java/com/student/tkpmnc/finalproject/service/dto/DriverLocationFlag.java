@@ -12,4 +12,5 @@ public class DriverLocationFlag {
     private Long id;
     private boolean isOnline;
     private DriverLocation driverLocation;
+    private Long distanceValue;
 }

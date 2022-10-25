@@ -44,6 +44,16 @@ public class JourneyDelegateImpl implements JourneyApiDelegate {
     }
 
     @Override
+    public ResponseEntity<Journey> getInProgressJourneyByCustomer(String id) {
+        return new ResponseEntity<>(journeyService.getInProgressJourneyByCustomerId(id), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<Journey> getInProgressJourneyByDriver(String id) {
+        return new ResponseEntity<>(journeyService.getInProgressJourneyByDriverId(id), HttpStatus.OK);
+    }
+
+    @Override
     public ResponseEntity<Journey> getJourneyById(String id) {
         return new ResponseEntity<>(journeyService.getJourneyById(id), HttpStatus.OK);
     }

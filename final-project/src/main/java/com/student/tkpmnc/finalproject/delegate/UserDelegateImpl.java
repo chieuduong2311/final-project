@@ -2,6 +2,7 @@ package com.student.tkpmnc.finalproject.delegate;
 
 import com.student.tkpmnc.finalproject.api.UserApiDelegate;
 import com.student.tkpmnc.finalproject.api.model.LoginInfo;
+import com.student.tkpmnc.finalproject.api.model.LoginResponse;
 import com.student.tkpmnc.finalproject.service.JwtUserDetailsService;
 import com.student.tkpmnc.finalproject.service.authentication.JwtTokenUtil;
 import com.student.tkpmnc.finalproject.service.dto.AuthUserType;
@@ -26,7 +27,7 @@ public class UserDelegateImpl implements UserApiDelegate {
     JwtUserDetailsService jwtUserDetailsService;
 
     @Override
-    public ResponseEntity<String> loginUser(String type, LoginInfo body) {
+    public ResponseEntity<LoginResponse> loginUser(String type, LoginInfo body) {
         UserDetails userDetails;
         if (AuthUserType.CUSTOMER.name().equalsIgnoreCase(type)) {
             authServiceConfig.put(AuthUserType.CUSTOMER.getDetails(), Boolean.TRUE);
@@ -37,7 +38,8 @@ public class UserDelegateImpl implements UserApiDelegate {
         }
         userDetails = jwtUserDetailsService.loadUserByUsername(body.getUsername());
         String token = jwtTokenUtil.generateToken(userDetails);
-        return new ResponseEntity<>(token, HttpStatus.OK);
+        var response = new LoginResponse().token(token).role(userDetails.getAuthorities().toString());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override

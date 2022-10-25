@@ -27,9 +27,6 @@ public class CustomerService {
     CustomerRepository customerRepository;
 
     @Autowired
-    LocationRepository locationRepository;
-
-    @Autowired
     PlaceRepository placeRepository;
 
     @Autowired

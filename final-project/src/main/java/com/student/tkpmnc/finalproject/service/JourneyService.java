@@ -10,6 +10,7 @@ import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.feign.DistanceMatrixApi;
 import com.student.tkpmnc.finalproject.feign.dto.DistanceResponse;
+import com.student.tkpmnc.finalproject.service.dto.DriverBroadcastMessage;
 import com.student.tkpmnc.finalproject.service.helper.PlaceHelper;
 import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
@@ -20,8 +21,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class JourneyService {
@@ -202,25 +204,61 @@ public class JourneyService {
         RawPlace origin = placeRepository.findFirstByPlaceId(journey.get().getOrigin()).orElseThrow(() -> new NotFoundException("Place does not exist"));
         String originString = String.join(",", origin.getLat().toString() ,origin.getLng().toString());
 
-        Long closestDriverId = -1L;
-        Long closestDistance = MAX_DISTANCE;
+        int countNumberOfDriver = 0;
         for (DriverLocationFlag flag : driverLocationMap.values()) {
             if (!flag.isOnline()) {
                 continue;
             }
+
+            if (journeyRepository.findInProgressJourneyByDriverId(flag.getId()).isPresent()) {
+                continue;
+            }
+
             String destinationString = String.join(",", flag.getDriverLocation().getLat().toString(), flag.getDriverLocation().getLng().toString());
             DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString, API_KEY);
-            if (closestDistance > response.getRows().get(0).getElements().get(0).getDistance().getValue()) {
-                closestDistance = response.getRows().get(0).getElements().get(0).getDistance().getValue();
-                closestDriverId = flag.getId();
+            Long distance = response.getRows().get(0).getElements().get(0).getDistance().getValue();
+            if (distance < MAX_DISTANCE) {
+                flag.setDistanceValue(distance);
+                countNumberOfDriver++;
+            } else {
+                flag.setDistanceValue(null);
             }
         }
 
-        if (closestDriverId == -1L) {
+        List<DriverLocationFlag> flags = new ArrayList<>(driverLocationMap.values());
+        Collections.sort(flags, Comparator.comparing(DriverLocationFlag::getDistanceValue));
+
+        List<Long> driverIds = new ArrayList<>();
+
+        while (countNumberOfDriver < flags.size() && countNumberOfDriver < 5) {
+            driverIds.add(flags.get(countNumberOfDriver).getId());
+            countNumberOfDriver++;
+        }
+        if (countNumberOfDriver == 0) {
             throw new NoAvailableDriverException("Cannot find any available drivers now.");
         }
+        var message = DriverBroadcastMessage.builder()
+                .drivers(driverIds)
+                .journey(toJourney(journey.get()))
+                .build();
+        template.convertAndSend("/topic/message", message);
+    }
 
-        journey.get().setDriverId(closestDriverId);
-        template.convertAndSend("/topic/message", toJourney(journey.get()));
+    public Journey getInProgressJourneyByCustomerId(String id) {
+        var idInLong = Long.parseLong(id);
+        var journeyOpt = journeyRepository.findInProgressJourneyByCustomerId(idInLong);
+        if (journeyOpt.isEmpty()) {
+            return null;
+        }
+        return toJourney(journeyOpt.get());
+    }
+
+    public Journey getInProgressJourneyByDriverId(String id) {
+        var idInLong = Long.parseLong(id);
+        var journeyOpt = journeyRepository.findInProgressJourneyByDriverId(idInLong);
+        if (journeyOpt.isEmpty()) {
+            return null;
+        }
+        return toJourney(journeyOpt.get());
     }
 }

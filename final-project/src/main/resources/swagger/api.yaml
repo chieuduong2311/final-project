@@ -392,7 +392,7 @@ paths:
               type: integer
               format: int32
           schema:
-            type: string
+            $ref: '#/definitions/LoginResponse'
         '401':
           description: Invalid username/password supplied
   /user/logout/{username}:
@@ -476,6 +476,50 @@ paths:
           description: Invalid request
         '404':
           description: Journey not found
+  /journey/customer/{id}:
+    get:
+      tags:
+        - journey
+      summary: Get journey
+      description: This can only be done by the logged in user.
+      operationId: getInProgressJourneyByCustomer
+      parameters:
+        - name: id
+          in: path
+          description: id of customer
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Journey'
+        '400':
+          description: Invalid request
+        '404':
+          description: Customer not found
+  /journey/driver/{id}:
+    get:
+      tags:
+        - journey
+      summary: Get journey
+      description: This can only be done by the logged in user.
+      operationId: getInProgressJourneyByDriver
+      parameters:
+        - name: id
+          in: path
+          description: id of driver
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Journey'
+        '400':
+          description: Invalid request
+        '404':
+          description: Driverl not found
     post:
       tags:
         - journey
@@ -797,6 +841,17 @@ definitions:
     required:
       - controlNumber
       - type
+
+  LoginResponse:
+    type: object
+    properties:
+      id:
+        type: number
+        format: double
+      role:
+        type: string
+      token:
+        type: string
 
   VehicleType:
     type: string
