@@ -15,15 +15,14 @@ import com.student.tkpmnc.finalproject.service.helper.PlaceHelper;
 import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
+import com.student.tkpmnc.finalproject.service.socketio.server.JourneyModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 @Service
 public class JourneyService {
@@ -56,7 +55,7 @@ public class JourneyService {
     ConcurrentHashMap<Long, DriverLocationFlag> driverLocationMap;
 
     @Autowired
-    private SimpMessagingTemplate template;
+    JourneyModule journeyModule;
 
     @Autowired
     private DistanceMatrixApi distanceMatrixApi;
@@ -210,9 +209,6 @@ public class JourneyService {
                 continue;
             }
 
-            if (journeyRepository.findInProgressJourneyByDriverId(flag.getId()).isPresent()) {
-                continue;
-            }
 
             String destinationString = String.join(",", flag.getDriverLocation().getLat().toString(), flag.getDriverLocation().getLng().toString());
             DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString, API_KEY);
@@ -241,7 +237,7 @@ public class JourneyService {
                 .drivers(driverIds)
                 .journey(toJourney(journey.get()))
                 .build();
-        template.convertAndSend("/topic/message", message);
+        journeyModule.sendEvent(message);
     }
 
     public Journey getInProgressJourneyByCustomerId(String id) {
