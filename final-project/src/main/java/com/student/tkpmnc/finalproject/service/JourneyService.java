@@ -34,10 +34,7 @@ public class JourneyService {
     LocationRepository locationRepository;
 
     @Autowired
-    CustomerRepository customerRepository;
-
-    @Autowired
-    DriverRepository driverRepository;
+    UserRepository userRepository;
 
     @Autowired
     PlaceRepository placeRepository;
@@ -70,13 +67,11 @@ public class JourneyService {
 
     @Transactional
     public Journey createJourney(Journey request) {
-        if (!schemaHelper.validate(SCHEMA_NAME, request).isEmpty()) {
-            throw new RequestException("Invalid journey request");
-        }
+        schemaHelper.validate(SCHEMA_NAME, request);
         placeHelper.savePlaceIfNotExisted(request.getDestination());
         placeHelper.savePlaceIfNotExisted(request.getOrigin());
 
-        if (!customerRepository.existsById(request.getCustomerId())) {
+        if (!userRepository.existsById(request.getCustomerId())) {
             throw new NotFoundException("Customer is not existed");
         }
 
@@ -110,7 +105,7 @@ public class JourneyService {
             throw new NotFoundException("Journey is not existed");
         }
 
-        if (!driverRepository.existsById(driverIdInLong)) {
+        if (!userRepository.existsById(driverIdInLong)) {
             throw new NotFoundException("Driver is not existed");
         }
 

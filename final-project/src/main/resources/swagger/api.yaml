@@ -19,117 +19,12 @@ tags:
     description: "Driver function"
   - name: "journey"
     description: "Journey controller"
-  - name: "vehicle"
-    description: "Vehicle management"
   - name: "call"
     description: "Call management"
 schemes:
   - "https"
   - "http"
 paths:
-  /customer:
-    post:
-      tags:
-        - customer
-      summary: Create a customer
-      operationId: createCustomer
-      parameters:
-        - name: body
-          in: body
-          description: Create a customer object
-          schema:
-            $ref: '#/definitions/Customer'
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Customer'
-        '400':
-          description: Invalid request
-    get:
-      tags:
-        - customer
-      summary: Get customer by phone
-      operationId: getCustomerInfoByPhone
-      parameters:
-        - name: phone
-          in: query
-          description: phone of customer need to query
-          required: true
-          type: string
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Customer'
-        '400':
-          description: Invalid request
-        '404':
-          description: Customer not found
-  /customer/register:
-    post:
-      tags:
-        - customer
-      summary: Create a customer
-      operationId: registerCustomer
-      parameters:
-        - name: body
-          in: body
-          description: Create a customer object
-          schema:
-            $ref: '#/definitions/Customer'
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Customer'
-        '400':
-          description: Invalid request
-  /customer/{id}:
-    put:
-      tags:
-        - "customer"
-      summary: "Update a customer"
-      operationId: "updateCustomer"
-      parameters:
-        - name: "id"
-          in: "path"
-          description: "id of customer need to update"
-          required: true
-          type: "string"
-        - name: "body"
-          in: "body"
-          required: true
-          description: "Update a customer object"
-          schema:
-            $ref: '#/definitions/Customer'
-      responses:
-        '200':
-          description: "successful operation"
-          schema:
-            $ref: '#/definitions/Customer'
-        '400':
-          description: Invalid request
-        '404':
-          description: Customer not found
-    delete:
-      tags:
-        - customer
-      summary: Update a customer
-      operationId: deleteCustomer
-      parameters:
-        - name: id
-          in: path
-          description: id of customer need to delete
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Deleted user successfully
-        '400':
-          description: Invalid request
-        '404':
-          description: Customer not found
   /customer/{id}/mostPlaces:
     get:
       tags:
@@ -173,113 +68,74 @@ paths:
         '404':
           description: Customer not found
 
-  /driver/{id}:
-    put:
-      tags:
-        - driver
-      summary: Update driver
-      description: This can only be done by the logged in user.
-      operationId: updateDriver
-      parameters:
-        - name: id
-          in: path
-          description: id of driver need to update
-          required: true
-          type: string
-        - name: body
-          in: body
-          required: true
-          description: Update an existent driver in application
-          schema:
-            $ref: '#/definitions/Driver'
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Driver'
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: Driver not found
-    delete:
-      tags:
-        - driver
-      summary: Delete driver
-      description: This can only be done by the logged in user.
-      operationId: deleteDriver
-      parameters:
-        - name: id
-          in: path
-          description: The id of driver that needs to be deleted
-          required: true
-          type: string
-      responses:
-        '200':
-          description: Deleted driver successfully
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: Driver not found
-    get:
-      tags:
-        - driver
-      summary: Get driver by id
-      operationId: getDriverInfoById
-      parameters:
-        - name: id
-          in: path
-          description: The id of driver that needs to query
-          required: true
-          type: string
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Driver'
-        '400':
-          description: Invalid request
-        '404':
-          description: Driver not found
-  /driver:
-    post:
-      tags:
-        - driver
-      summary: Create new driver
-      operationId: createDriver
-      parameters:
-        - name: body
-          in: body
-          required: true
-          description: Created driver object
-          schema:
-            $ref: '#/definitions/Driver'
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Driver'
-        '400':
-          description: Invalid request
-    get:
-      tags:
-        - driver
-      summary: Get driver by phone
-      operationId: getDriverInfoByPhone
-      parameters:
-        - name: phone
-          in: query
-          description: phone of driver need to query
-          required: true
-          type: string
-      responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Driver'
-        '400':
-          description: Invalid request
-        '404':
-          description: Driver not found
+  # /driver/{id}:
+  #   put:
+  #     tags:
+  #       - driver
+  #     summary: Update driver
+  #     description: This can only be done by the logged in user.
+  #     operationId: updateDriver
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         description: id of driver need to update
+  #         required: true
+  #         type: string
+  #       - name: body
+  #         in: body
+  #         required: true
+  #         description: Update an existent driver in application
+  #         schema:
+  #           $ref: '#/definitions/Driver'
+  #     responses:
+  #       default:
+  #         description: successful operation
+  #         schema:
+  #           $ref: '#/definitions/Driver'
+  #       '400':
+  #         description: Invalid username supplied
+  #       '404':
+  #         description: Driver not found
+  #   delete:
+  #     tags:
+  #       - driver
+  #     summary: Delete driver
+  #     description: This can only be done by the logged in user.
+  #     operationId: deleteDriver
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         description: The id of driver that needs to be deleted
+  #         required: true
+  #         type: string
+  #     responses:
+  #       '200':
+  #         description: Deleted driver successfully
+  #       '400':
+  #         description: Invalid username supplied
+  #       '404':
+  #         description: Driver not found
+  #   get:
+  #     tags:
+  #       - driver
+  #     summary: Get driver by id
+  #     operationId: getDriverInfoById
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         description: The id of driver that needs to query
+  #         required: true
+  #         type: string
+  #     responses:
+  #       default:
+  #         description: successful operation
+  #         schema:
+  #           $ref: '#/definitions/Driver'
+  #       '400':
+  #         description: Invalid request
+  #       '404':
+  #         description: Driver not found
+
   /driver/online/{id}:
     post:
       tags:
@@ -320,24 +176,27 @@ paths:
           description: Invalid username supplied
         '404':
           description: Driver not found
-  /driver/register:
+  /driver/register/{id}:
     post:
       tags:
         - driver
       summary: Create new driver
       operationId: registerDriver
       parameters:
+        - name: id
+          in: path
+          description: The id of driver that needs to be turn on
+          required: true
+          type: string
         - name: body
           in: body
           required: true
           description: Created driver object
           schema:
-            $ref: '#/definitions/Driver'
+            $ref: '#/definitions/User'
       responses:
-        default:
-          description: successful operation
-          schema:
-            $ref: '#/definitions/Driver'
+        '200':
+          description: Register driver successfully
         '400':
           description: Invalid request
   /driver/sync-location/{id}:
@@ -372,11 +231,6 @@ paths:
       description: ''
       operationId: loginUser
       parameters:
-        - name: type
-          in: header
-          description: type of user need to login
-          required: true
-          type: string
         - name: body
           in: body
           required: true
@@ -411,6 +265,132 @@ paths:
       responses:
         default:
           description: successful operation
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create new user
+      operationId: createUser
+      parameters:
+        - name: body
+          in: body
+          required: true
+          description: Created user object
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid request
+    get:
+      tags:
+        - user
+      summary: Get user by phone
+      operationId: getUserInfoByPhone
+      parameters:
+        - name: phone
+          in: query
+          description: phone of user need to query
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid request
+        '404':
+          description: User not found
+  /user/register:
+    post:
+      tags:
+        - user
+      summary: Create a user
+      operationId: registerUser
+      parameters:
+        - name: body
+          in: body
+          description: Create a user object
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid request
+  /user/{id}:
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: id
+          in: path
+          description: id of user need to update
+          required: true
+          type: string
+        - name: body
+          in: body
+          required: true
+          description: Update an existent user in application
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: The id of user that needs to be deleted
+          required: true
+          type: string
+      responses:
+        '200':
+          description: Deleted user successfully
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    get:
+      tags:
+        - user
+      summary: Get user by id
+      operationId: getUserInfoById
+      parameters:
+        - name: id
+          in: path
+          description: The id of user that needs to query
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid request
+        '404':
+          description: User not found
 
   /call:
     post:
@@ -611,52 +591,8 @@ paths:
           description: Invalid id supplied
         '404':
           description: Journey or driver not found
-securityDefinitions:
-  api_key:
-    type: apiKey
-    name: api_key
-    in: header
 
 definitions:
-  Customer:
-    type: object
-    properties:
-      id:
-        type: integer
-        format: int64
-        example: 100000
-      username:
-        type: string
-        example: fehguy
-      firstName:
-        type: string
-        example: John
-      lastName:
-        type: string
-        example: James
-      email:
-        type: string
-        example: john@email.com
-      password:
-        type: string
-        example: 12345
-      phone:
-        type: string
-        example: 12345
-      userType:
-        type: integer
-      userStatus:
-        type: integer
-        description: User Status
-        format: int32
-        example: 1
-    required:
-      - username
-      - firstName
-      - lastName
-      - email
-      - password
-      - phone
   Place:
     type: object
     properties:
@@ -700,7 +636,6 @@ definitions:
         type: string
       callType:
         $ref: '#/definitions/CallType'
-        example: CALL
       vehicleType:
         $ref: '#/definitions/VehicleType'
       origin:
@@ -764,7 +699,7 @@ definitions:
       - price
       - paymentMethod
 
-  Driver:
+  User:
     type: object
     properties:
       id:
@@ -790,12 +725,9 @@ definitions:
         type: string
         example: '12345'
       userType:
-        type: integer
+        $ref: '#/definitions/UserType'
       userStatus:
-        type: integer
-        description: User Status
-        format: int32
-        example: 1
+        $ref: '#/definitions/UserStatus'
       personalId:
         type: string
       overallRate:
@@ -846,8 +778,8 @@ definitions:
     type: object
     properties:
       id:
-        type: number
-        format: double
+        type: integer
+        format: int64
       role:
         type: string
       token:
@@ -889,3 +821,13 @@ definitions:
     enum:
       - MOBILE_CALL
       - WEB_APP
+  UserType:
+    type: string
+    enum:
+      - CUSTOMER
+      - DRIVER
+  UserStatus:
+    type: string
+    enum:
+      - ACTIVE
+      - BLOCKED

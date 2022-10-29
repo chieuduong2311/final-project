@@ -18,7 +18,7 @@
       "type": "string"
     },
     "password": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "email": {
       "type": "string",
@@ -28,13 +28,16 @@
       "type": "string"
     },
     "userType": {
-      "type": ["integer", "null"]
+      "type": ["string", "null"]
     },
     "userStatus": {
-      "type": ["integer", "null"]
+      "type": ["string", "null"]
     },
     "personalId": {
       "type": "string"
+    },
+    "overallRate": {
+      "type": ["number", "null"]
     },
     "vehicleInfo": {
       "type": "object",

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Customer",
-  "description": "Customer request",
+  "title": "User",
+  "description": "User request",
   "type": "object",
   "properties": {
     "id": {
@@ -28,10 +28,31 @@
       "type": "string"
     },
     "userType": {
-      "type": ["integer", "null"]
+      "type": ["string", "null"]
     },
     "userStatus": {
-      "type": ["integer", "null"]
+      "type": ["string", "null"]
+    },
+    "personalId": {
+      "type": ["string", "null"]
+    },
+    "vehicleInfo": {
+      "type": ["object", "null"],
+      "properties": {
+        "id": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "controlNumber": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": ["type", "controlNumber"]
     }
   },
   "required": ["firstName", "lastName", "username", "password", "email", "phone"]
