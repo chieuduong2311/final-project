@@ -1,13 +1,19 @@
 package com.student.tkpmnc.finalproject.entity;
 
-import lombok.Getter;
-import lombok.Setter;
+import com.student.tkpmnc.finalproject.api.model.User;
+import com.student.tkpmnc.finalproject.api.model.UserStatus;
+import com.student.tkpmnc.finalproject.api.model.UserType;
+import lombok.*;
 
 import javax.persistence.*;
 
-@MappedSuperclass
-@Getter
-@Setter
+@Entity
+@Data
+@EqualsAndHashCode(callSuper = false)
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "user")
 public class RawUser extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,12 +38,42 @@ public class RawUser extends Auditable {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "user_type", nullable = false)
-    private Integer userType;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type")
+    private UserType userType;
 
-    @Column(name = "user_status", nullable = false)
-    private Integer userStatus;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status")
+    private UserStatus userStatus;
 
-    @Column(name = "is_deleted", nullable = false)
+    @Column(name = "is_deleted", nullable = false, columnDefinition="bit(1) default 0")
     private Boolean isDeleted;
+
+    @Column(name = "is_driver", columnDefinition="bit(1) default 0")
+    private Boolean isDriver;
+
+    @Column(name = "personal_id")
+    private String personalId;
+
+    @Column(name = "overall_rate")
+    private Double overallRate;
+
+    @Column(name = "is_online", columnDefinition="bit(1) default 0")
+    private boolean isOnline;
+
+
+    public User toUser() {
+        User user = new User();
+        user.userStatus(userStatus)
+            .userType(userType)
+            .id(id)
+            .email(email)
+            .phone(phone)
+            .firstName(firstName)
+            .lastName(lastName)
+            .personalId(personalId)
+            .overallRate(overallRate)
+            .username(username);
+        return user;
+    }
 }

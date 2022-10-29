@@ -1,8 +1,8 @@
 package com.student.tkpmnc.finalproject.delegate;
 
 import com.student.tkpmnc.finalproject.api.DriverApiDelegate;
-import com.student.tkpmnc.finalproject.api.model.Driver;
 import com.student.tkpmnc.finalproject.api.model.DriverLocation;
+import com.student.tkpmnc.finalproject.api.model.User;
 import com.student.tkpmnc.finalproject.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,29 +16,9 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     DriverService driverService;
 
     @Override
-    public ResponseEntity<Driver> createDriver(Driver body) {
-        return new ResponseEntity<>(driverService.createDriver(body), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Void> deleteDriver(String id) {
-        driverService.deleteDriver(id);
+    public ResponseEntity<Void> registerDriver(String id, User body) {
+        driverService.register(id, body);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Driver> getDriverInfoById(String id) {
-        return new ResponseEntity<>((driverService.getDriverById(id)), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Driver> getDriverInfoByPhone(String phone) {
-        return new ResponseEntity<>(driverService.getDriverByPhone(phone), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Driver> registerDriver(Driver body) {
-        return new ResponseEntity<>(driverService.createDriver(body), HttpStatus.OK);
     }
 
     @Override
@@ -57,10 +37,5 @@ public class DriverDelegateImpl implements DriverApiDelegate {
     public ResponseEntity<Void> syncLocation(String id, DriverLocation body) {
         driverService.syncLocation(id, body);
         return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<Driver> updateDriver(String id, Driver body) {
-        return new ResponseEntity<>(driverService.updateDriver(id, body), HttpStatus.OK);
     }
 }

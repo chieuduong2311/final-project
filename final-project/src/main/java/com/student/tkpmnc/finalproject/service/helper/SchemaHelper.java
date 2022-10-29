@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class SchemaHelper {
@@ -34,9 +35,12 @@ public class SchemaHelper {
         }
     }
 
-    public Set<ValidationMessage> validate(String schemaName, Object request) {
+    public void validate(String schemaName, Object request) {
         JsonSchema schema = jsonSchema(schemaName);
         var json = objectMapper.convertValue(request, JsonNode.class);
-        return schema.validate(json);
+        var result = schema.validate(json);
+        if (!result.isEmpty()) {
+            throw new RequestException(schemaName + " " + result.stream().map(ValidationMessage::getMessage).collect(Collectors.joining(",")));
+        }
     }
 }
