@@ -7,8 +7,6 @@ import com.networknt.schema.SpecVersion;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -25,11 +23,6 @@ public class AppConfig {
     @Bean
     public JsonSchemaFactory factory() {
         return JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-    }
-
-    @Bean
-    public PasswordEncoder bCryptPasswordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean

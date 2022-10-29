@@ -90,6 +90,7 @@ public class DriverService {
         Long idInLong = Long.parseLong(id);
         if (driverLocationMap.containsKey(idInLong)) {
             driverLocationMap.get(idInLong).setDriverLocation(location);
+            driverLocationMap.get(idInLong).setOnline(true);
             return;
         }
         var flag = DriverLocationFlag.builder()

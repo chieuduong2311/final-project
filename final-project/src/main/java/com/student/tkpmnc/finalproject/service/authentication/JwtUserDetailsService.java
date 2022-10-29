@@ -1,6 +1,7 @@
-package com.student.tkpmnc.finalproject.service;
+package com.student.tkpmnc.finalproject.service.authentication;
 
 import com.student.tkpmnc.finalproject.entity.RawUser;
+import com.student.tkpmnc.finalproject.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +10,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {

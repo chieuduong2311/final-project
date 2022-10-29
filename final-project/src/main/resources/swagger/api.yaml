@@ -231,11 +231,6 @@ paths:
       description: ''
       operationId: loginUser
       parameters:
-        - name: type
-          in: header
-          description: type of user need to login
-          required: true
-          type: string
         - name: body
           in: body
           required: true
@@ -783,8 +778,8 @@ definitions:
     type: object
     properties:
       id:
-        type: number
-        format: double
+        type: integer
+        format: int64
       role:
         type: string
       token:
