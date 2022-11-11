@@ -12,10 +12,13 @@
       "type": "number"
     },
     "callId": {
-      "type": "number"
+      "type": ["number", "null"]
     },
     "driverId": {
       "type": ["number", "null"]
+    },
+    "vehicleType": {
+      "type": "string"
     },
     "status": {
       "type": ["string", "null"]
@@ -88,5 +91,5 @@
       "type": ["string", "null"]
     }
   },
-  "required": ["customerId", "callId", "origin", "destination", "paymentMethod"]
+  "required": ["customerId", "vehicleType", "origin", "destination", "paymentMethod"]
 }

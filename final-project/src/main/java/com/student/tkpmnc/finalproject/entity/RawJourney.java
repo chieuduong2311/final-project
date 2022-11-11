@@ -3,6 +3,7 @@ package com.student.tkpmnc.finalproject.entity;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.student.tkpmnc.finalproject.api.model.JourneyStatus;
 import com.student.tkpmnc.finalproject.api.model.PaymentMethod;
+import com.student.tkpmnc.finalproject.api.model.VehicleType;
 import lombok.*;
 
 import javax.persistence.*;
@@ -34,6 +35,10 @@ public class RawJourney extends Auditable {
 
     @Column(name = "destination", nullable = false)
     private String destination;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "vehicle_type", nullable = false)
+    private VehicleType vehicleType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

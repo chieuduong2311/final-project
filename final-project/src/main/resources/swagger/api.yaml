@@ -619,7 +619,6 @@ definitions:
       - placeId
       - lat
       - lng
-      - placeName
       - fullAddressInString
 
   Call:
@@ -668,6 +667,8 @@ definitions:
       driverId:
         type: integer
         format: int64
+      vehicleType:
+        $ref: '#/definitions/VehicleType'
       status:
         $ref: '#/definitions/JourneyStatus'
       reason:
@@ -692,7 +693,7 @@ definitions:
       pointCode:
         type: string
     required:
-      - callId
+      - vehicleType
       - customerId
       - origin
       - destination
@@ -743,8 +744,6 @@ definitions:
       - email
       - password
       - phone
-      - personalId
-      - vehicleInfo
 
   DriverLocation:
     type: object
@@ -807,7 +806,7 @@ definitions:
     type: string
     enum:
       - COMPLETED
-      - CANCELED
+      - CANCELLED
       - CORRUPTED
       - INPROGRESS
   PaymentMethod:
