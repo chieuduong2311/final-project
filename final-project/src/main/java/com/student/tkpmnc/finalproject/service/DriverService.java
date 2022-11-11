@@ -11,7 +11,7 @@ import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.VehicleRepository;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +30,9 @@ public class DriverService {
 
     @Autowired
     ConcurrentHashMap<Long, DriverLocationFlag> driverLocationMap;
+
+    @Value("${project.config.maxDistance}")
+    private Long MAX_DISTANCE;
 
     private static final String SCHEMA_NAME = "driver";
 
@@ -91,12 +94,14 @@ public class DriverService {
         if (driverLocationMap.containsKey(idInLong)) {
             driverLocationMap.get(idInLong).setDriverLocation(location);
             driverLocationMap.get(idInLong).setOnline(true);
+            driverLocationMap.get(idInLong).setDistanceValue(MAX_DISTANCE);
             return;
         }
         var flag = DriverLocationFlag.builder()
                 .id(idInLong)
                 .driverLocation(location)
                 .isOnline(true)
+                .distanceValue(MAX_DISTANCE)
                 .build();
         driverLocationMap.put(idInLong, flag);
     }

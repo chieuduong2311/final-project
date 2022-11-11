@@ -1,5 +1,6 @@
 package com.student.tkpmnc.finalproject.repository;
 
+import com.student.tkpmnc.finalproject.entity.RawCall;
 import com.student.tkpmnc.finalproject.entity.RawJourney;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,4 +17,7 @@ public interface JourneyRepository extends JpaRepository<RawJourney, Long> {
 
     @Query(value = "select * from journey j where j.customer_id = :customerId and j.status = 'INPROGRESS'", nativeQuery = true)
     Optional<RawJourney> findInProgressJourneyByCustomerId(Long customerId);
+
+    @Query(value = "select * from journey c where c.customer_id = :customerId order by id desc limit 5", nativeQuery = true)
+    List<RawCall> getFiveRecentJourneysByCustomerId(Long customerId);
 }

@@ -7,7 +7,6 @@ import com.student.tkpmnc.finalproject.entity.RawJourney;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.exception.NoAvailableDriverException;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
-import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.feign.DistanceMatrixApi;
 import com.student.tkpmnc.finalproject.feign.dto.DistanceResponse;
 import com.student.tkpmnc.finalproject.service.dto.DriverBroadcastMessage;
@@ -43,6 +42,9 @@ public class JourneyService {
     JourneyRepository journeyRepository;
 
     @Autowired
+    VehicleRepository vehicleRepository;
+
+    @Autowired
     SchemaHelper schemaHelper;
 
     @Autowired
@@ -75,15 +77,16 @@ public class JourneyService {
             throw new NotFoundException("Customer is not existed");
         }
 
-        if (!callRepository.existsById(request.getCallId())) {
-            throw new NotFoundException("Call is not existed");
-        }
+//        if (!callRepository.existsById(request.getCallId())) {
+//            throw new NotFoundException("Call is not existed");
+//        }
 
         RawJourney journey = RawJourney.builder()
                 .callId(request.getCallId())
                 .customerId(request.getCustomerId())
                 .destination(request.getDestination().getPlaceId())
                 .origin(request.getOrigin().getPlaceId())
+                .vehicleType(request.getVehicleType())
                 .status(JourneyStatus.INPROGRESS)
                 .startDateTime(new Date().getTime())
                 .price(request.getPrice())
@@ -121,7 +124,7 @@ public class JourneyService {
         }
 
         if (journey.get().getDriverId() == null) {
-            journey.get().setStatus(JourneyStatus.CANCELED);
+            journey.get().setStatus(JourneyStatus.CANCELLED);
         } else {
             journey.get().setStatus(JourneyStatus.CORRUPTED);
         }
@@ -178,6 +181,7 @@ public class JourneyService {
                 .customerId(rawJourney.getCustomerId())
                 .callId(rawJourney.getCallId())
                 .driverId(rawJourney.getDriverId())
+                .vehicleType(rawJourney.getVehicleType())
                 .endDateTime(rawJourney.getEndDateTime())
                 .id(rawJourney.getId())
                 .status(rawJourney.getStatus())
@@ -196,24 +200,30 @@ public class JourneyService {
             throw new NotFoundException("Journey is not existed");
         }
         RawPlace origin = placeRepository.findFirstByPlaceId(journey.get().getOrigin()).orElseThrow(() -> new NotFoundException("Place does not exist"));
-        String originString = String.join(",", origin.getLat().toString() ,origin.getLng().toString());
+        String originString = String.join(",", origin.getLat().toString(), origin.getLng().toString());
 
         int countNumberOfDriver = 0;
         for (DriverLocationFlag flag : driverLocationMap.values()) {
             if (!flag.isOnline()) {
+                flag.setDistanceValue(MAX_DISTANCE);
                 continue;
             }
 
+            var vehicleInfo = vehicleRepository.findFirstByDriverId(flag.getId());
+            if (vehicleInfo.isEmpty()) {
+                flag.setDistanceValue(MAX_DISTANCE);
+                continue;
+            }
+
+            if (!journey.get().getVehicleType().equals(vehicleInfo.get().getType())) {
+                flag.setDistanceValue(MAX_DISTANCE);
+                continue;
+            }
 
             String destinationString = String.join(",", flag.getDriverLocation().getLat().toString(), flag.getDriverLocation().getLng().toString());
             DistanceResponse response = distanceMatrixApi.getDistanceDefault(originString, destinationString, API_KEY);
             Long distance = response.getRows().get(0).getElements().get(0).getDistance().getValue();
-            if (distance < MAX_DISTANCE) {
-                flag.setDistanceValue(distance);
-                countNumberOfDriver++;
-            } else {
-                flag.setDistanceValue(null);
-            }
+            flag.setDistanceValue(distance);
         }
 
         List<DriverLocationFlag> flags = new ArrayList<>(driverLocationMap.values());
@@ -222,7 +232,9 @@ public class JourneyService {
         List<Long> driverIds = new ArrayList<>();
 
         while (countNumberOfDriver < flags.size() && countNumberOfDriver < 5) {
-            driverIds.add(flags.get(countNumberOfDriver).getId());
+            if (flags.get(countNumberOfDriver).getDistanceValue() < MAX_DISTANCE) {
+                driverIds.add(flags.get(countNumberOfDriver).getId());
+            }
             countNumberOfDriver++;
         }
         if (countNumberOfDriver == 0) {

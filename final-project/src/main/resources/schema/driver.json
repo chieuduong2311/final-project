@@ -9,23 +9,23 @@
       "type": ["number", "null"]
     },
     "firstName": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "lastName": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "username": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "password": {
       "type": ["string", "null"]
     },
     "email": {
-      "type": "string",
+      "type": ["string", "null"],
       "pattern": "^[\\w\\-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
     },
     "phone": {
-      "type": "string"
+      "type": ["string", "null"]
     },
     "userType": {
       "type": ["string", "null"]
@@ -58,5 +58,5 @@
       "required": ["type", "controlNumber"]
     }
   },
-  "required": ["firstName", "lastName", "username", "password", "email", "phone", "personalId", "vehicleInfo"]
+  "required": ["personalId", "vehicleInfo"]
 }
