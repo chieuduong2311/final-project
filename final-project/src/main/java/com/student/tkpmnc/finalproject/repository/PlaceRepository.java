@@ -12,4 +12,7 @@ public interface PlaceRepository extends JpaRepository<RawPlace, Long> {
 
     @Query(value = "select p.* from Location l join Place p on l.place_id = p.place_id where l.customer_id = :customerId and p.is_deleted = false order by l.times desc limit 5", nativeQuery = true)
     List<RawPlace> findFiveMostLocationByCustomerId(Long customerId);
+
+    @Query(value = "select p.* from Location l join Place p on l.place_id = p.place_id where l.phone = :phone and p.is_deleted = false order by l.times desc limit 5", nativeQuery = true)
+    List<RawPlace> findFiveMostLocationByPhone(String phone);
 }

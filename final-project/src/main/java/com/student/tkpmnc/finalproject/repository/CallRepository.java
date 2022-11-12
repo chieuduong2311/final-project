@@ -11,4 +11,7 @@ public interface CallRepository extends JpaRepository<RawCall, Long> {
 
     @Query(value = "select * from call_record c where c.customer_id = :customerId order by id desc limit 5", nativeQuery = true)
     List<RawCall> getFiveRecentCallsByCustomerId(Long customerId);
+
+    @Query(value = "select * from call_record c where c.phone = :phone order by id desc limit 5", nativeQuery = true)
+    List<RawCall> getFiveRecentCallsByPhone(String phone);
 }
