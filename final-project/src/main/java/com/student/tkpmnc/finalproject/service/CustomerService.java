@@ -27,14 +27,14 @@ public class CustomerService {
     CallRepository callRepository;
 
     @Transactional
-    public List<Place> getMostPlaces(String id) {
-        var listRawPlace = placeRepository.findFiveMostLocationByCustomerId(Long.parseLong(id));
+    public List<Place> getMostPlaces(String phone) {
+        var listRawPlace = placeRepository.findFiveMostLocationByPhone(phone);
         return listRawPlace.stream().map(RawPlace::toPlace).collect(Collectors.toList());
     }
 
     @Transactional
-    public List<Call> getRecentCalls(String id) {
-        List<RawCall> rawCallList = callRepository.getFiveRecentCallsByCustomerId(Long.parseLong(id));
+    public List<Call> getRecentCalls(String phone) {
+        List<RawCall> rawCallList = callRepository.getFiveRecentCallsByPhone(phone);
         return rawCallList.stream().map(this::convertToCall).collect(Collectors.toList());
     }
 

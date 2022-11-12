@@ -7,6 +7,7 @@ import com.student.tkpmnc.finalproject.entity.RawJourney;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.exception.NoAvailableDriverException;
 import com.student.tkpmnc.finalproject.exception.NotFoundException;
+import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.feign.DistanceMatrixApi;
 import com.student.tkpmnc.finalproject.feign.dto.DistanceResponse;
 import com.student.tkpmnc.finalproject.service.dto.DriverBroadcastMessage;
@@ -87,14 +88,15 @@ public class JourneyService {
                 .destination(request.getDestination().getPlaceId())
                 .origin(request.getOrigin().getPlaceId())
                 .vehicleType(request.getVehicleType())
-                .status(JourneyStatus.INPROGRESS)
+                .status(JourneyStatus.INITIALIZED)
                 .startDateTime(new Date().getTime())
+                .phone(request.getPhone())
                 .price(request.getPrice())
                 .paymentMethod(request.getPaymentMethod())
                 .build();
 
         journey = journeyRepository.saveAndFlush(journey);
-        request.status(JourneyStatus.INPROGRESS)
+        request.status(JourneyStatus.INITIALIZED)
                 .id(journey.getId())
                 .startDateTime(journey.getStartDateTime());
         return request;
@@ -108,11 +110,17 @@ public class JourneyService {
             throw new NotFoundException("Journey is not existed");
         }
 
+
+        if (journey.get().getDriverId() != null && !journey.get().getStatus().equals(JourneyStatus.INITIALIZED)) {
+            throw new RequestException("Journey has been accepted by another driver!");
+        }
+
         if (!userRepository.existsById(driverIdInLong)) {
             throw new NotFoundException("Driver is not existed");
         }
 
         journey.get().setDriverId(driverIdInLong);
+        journey.get().setStatus(JourneyStatus.INPROGRESS);
         journeyRepository.saveAndFlush(journey.get());
     }
 
@@ -153,6 +161,7 @@ public class JourneyService {
             Location record = Location.builder()
                     .customerId(journey.getCustomerId())
                     .placeId(journey.getDestination())
+                    .phone(journey.getPhone())
                     .times(1)
                     .build();
             locationRepository.saveAndFlush(record);
@@ -183,6 +192,7 @@ public class JourneyService {
                 .driverId(rawJourney.getDriverId())
                 .vehicleType(rawJourney.getVehicleType())
                 .endDateTime(rawJourney.getEndDateTime())
+                .phone(rawJourney.getPhone())
                 .id(rawJourney.getId())
                 .status(rawJourney.getStatus())
                 .rate(rawJourney.getRate())

@@ -18,12 +18,12 @@ public class CustomerDelegateImpl implements CustomerApiDelegate {
     CustomerService customerService;
 
     @Override
-    public ResponseEntity<List<Place>> getMostPlaces(String id) {
-        return new ResponseEntity<>(customerService.getMostPlaces(id), HttpStatus.OK);
+    public ResponseEntity<List<Place>> getMostPlaces(String phone) {
+        return new ResponseEntity<>(customerService.getMostPlaces(phone), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<List<Call>> getRecentCalls(String id) {
-        return new ResponseEntity<>(customerService.getRecentCalls(id), HttpStatus.OK);
+    public ResponseEntity<List<Call>> getRecentCalls(String phone) {
+        return new ResponseEntity<>(customerService.getRecentCalls(phone), HttpStatus.OK);
     }
 }

@@ -50,6 +50,9 @@ public class RawJourney extends Auditable {
     @Column(name = "reason")
     private String reason;
 
+    @Column(name = "phone")
+    private String phone;
+
     @JsonProperty("start_time")
     private Long startDateTime;
 

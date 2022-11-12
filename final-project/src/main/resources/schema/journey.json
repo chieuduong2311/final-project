@@ -26,6 +26,9 @@
     "reason": {
       "type": ["string", "null"]
     },
+    "phone": {
+      "type": "string"
+    },
     "rate": {
       "type": ["number", "null"]
     },
@@ -91,5 +94,5 @@
       "type": ["string", "null"]
     }
   },
-  "required": ["customerId", "vehicleType", "origin", "destination", "paymentMethod"]
+  "required": ["customerId", "vehicleType", "origin", "destination", "paymentMethod", "phone"]
 }

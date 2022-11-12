@@ -19,9 +19,6 @@ public class CallService {
     CallRepository callRepository;
 
     @Autowired
-    PlaceRepository placeRepository;
-
-    @Autowired
     SchemaHelper schemaHelper;
 
     @Autowired

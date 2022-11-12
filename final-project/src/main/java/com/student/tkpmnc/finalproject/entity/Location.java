@@ -21,6 +21,9 @@ public class Location {
     @Column(name = "customer_id", nullable = false)
     private long customerId;
 
+    @Column(name = "phone")
+    private String phone;
+
     @Column(name = "place_id", nullable = false)
     private String placeId;
 

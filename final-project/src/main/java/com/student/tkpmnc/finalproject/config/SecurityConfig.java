@@ -50,13 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder());
     }
 
-//    @Bean
-//    CorsConfigurationSource corsConfigurationSource() {
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-//        return source;
-//    }
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -71,9 +64,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/api/swagger-ui.html").permitAll()
                 .antMatchers("/user/login", "/user/register").permitAll()
-                .antMatchers("/customer/**", "/driver/register/*").hasAuthority("CUSTOMER")
-                .antMatchers("/driver/**").hasAuthority("DRIVER")
-                .antMatchers("/user", "/call", "/journey").hasAnyAuthority("DRIVER", "CUSTOMER")
+                .antMatchers("/customer/**", "/driver/register/*").hasAnyAuthority("CUSTOMER", "STAFF")
+                .antMatchers("/driver/**").hasAnyAuthority("DRIVER", "STAFF")
+                .antMatchers("/user", "/call", "/journey").hasAnyAuthority("DRIVER", "CUSTOMER", "STAFF")
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint)
                 .and().sessionManagement()
