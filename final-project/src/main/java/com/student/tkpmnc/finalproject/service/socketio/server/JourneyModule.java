@@ -32,10 +32,11 @@ public class JourneyModule {
         };
     }
 
-    public void sendEvent(DriverBroadcastMessage broadcastMessage) {
-        log.info("Broadcast message '{}'", broadcastMessage);
-        namespace.getBroadcastOperations().sendEvent("drivers", broadcastMessage);
+    public void sendEvent(Object message, String channelName) {
+        log.info("Broadcast message '{}'", message);
+        namespace.getBroadcastOperations().sendEvent(channelName, message);
     }
+
     private ConnectListener onConnected() {
         return client -> {
             HandshakeData handshakeData = client.getHandshakeData();
@@ -44,8 +45,6 @@ public class JourneyModule {
     }
 
     private DisconnectListener onDisconnected() {
-        return client -> {
-            log.info("Client[{}] - Disconnected from chat module.", client.getSessionId().toString());
-        };
+        return client -> log.info("Client[{}] - Disconnected from chat module.", client.getSessionId().toString());
     }
 }
