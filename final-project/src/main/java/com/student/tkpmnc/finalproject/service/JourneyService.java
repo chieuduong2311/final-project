@@ -10,6 +10,8 @@ import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.feign.DistanceMatrixApi;
 import com.student.tkpmnc.finalproject.feign.dto.DistanceResponse;
+import com.student.tkpmnc.finalproject.service.dto.CustomerMessage;
+import com.student.tkpmnc.finalproject.service.dto.CustomerMessageType;
 import com.student.tkpmnc.finalproject.service.dto.DriverBroadcastMessage;
 import com.student.tkpmnc.finalproject.service.helper.PlaceHelper;
 import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
@@ -115,13 +117,27 @@ public class JourneyService {
             throw new RequestException("Journey has been accepted by another driver!");
         }
 
-        if (!userRepository.existsById(driverIdInLong)) {
-            throw new NotFoundException("Driver is not existed");
+        var driverOpt = userRepository.findById(driverIdInLong);
+        var vehicleOpt = vehicleRepository.findFirstByDriverId(driverIdInLong);
+
+        if (driverOpt.isEmpty() || vehicleOpt.isEmpty()) {
+            throw new NotFoundException("Driver or vehicle is not existed");
         }
+
+        var driver = driverOpt.get().toUser();
+        driver.setVehicleInfo(vehicleOpt.get().toVehicle());
 
         journey.get().setDriverId(driverIdInLong);
         journey.get().setStatus(JourneyStatus.INPROGRESS);
         journeyRepository.saveAndFlush(journey.get());
+
+        CustomerMessage message = CustomerMessage.builder()
+                .message("Enjoy your journey. Please contact admin hotline 1800 0000 if any issues!")
+                .customerId(journey.get().getCustomerId())
+                .driver(driver)
+                .type(CustomerMessageType.SUCCESS_START)
+                .build();
+        journeyModule.sendEvent(message, "customers-noti");
     }
 
     @Transactional
@@ -166,6 +182,13 @@ public class JourneyService {
                     .build();
             locationRepository.saveAndFlush(record);
         }
+
+        CustomerMessage message = CustomerMessage.builder()
+                .message("Journey finished. Thank you for using our service!")
+                .customerId(journey.getCustomerId())
+                .type(CustomerMessageType.SUCCESS_FINISH)
+                .build();
+        journeyModule.sendEvent(message, "finish-journey");
     }
 
     @Transactional
@@ -182,12 +205,7 @@ public class JourneyService {
         Journey journey = new Journey();
         var origin = placeRepository.findFirstByPlaceId(rawJourney.getOrigin());
         var destination = placeRepository.findFirstByPlaceId(rawJourney.getDestination());
-        if (origin.isEmpty() || destination.isEmpty()) {
-            throw new NotFoundException("Origin or destination is not existed");
-        }
-        journey.destination(destination.get().toPlace())
-                .origin(origin.get().toPlace())
-                .customerId(rawJourney.getCustomerId())
+        journey.customerId(rawJourney.getCustomerId())
                 .callId(rawJourney.getCallId())
                 .driverId(rawJourney.getDriverId())
                 .vehicleType(rawJourney.getVehicleType())
@@ -199,6 +217,10 @@ public class JourneyService {
                 .reason(rawJourney.getReason())
                 .price(rawJourney.getPrice())
                 .paymentMethod(rawJourney.getPaymentMethod());
+        if (origin.isEmpty() || destination.isEmpty()) {
+            return journey;
+        }
+        journey.origin(origin.get().toPlace()).destination(destination.get().toPlace());
         return journey;
     }
 
@@ -247,14 +269,14 @@ public class JourneyService {
             }
             countNumberOfDriver++;
         }
-        if (countNumberOfDriver == 0) {
-            throw new NoAvailableDriverException("Cannot find any available drivers now.");
-        }
+//        if (countNumberOfDriver == 0) {
+//            throw new NoAvailableDriverException("Cannot find any available drivers now.");
+//        }
         var message = DriverBroadcastMessage.builder()
                 .drivers(driverIds)
                 .journey(toJourney(journey.get()))
                 .build();
-        journeyModule.sendEvent(message);
+        journeyModule.sendEvent(message, "drivers");
     }
 
     public Journey getInProgressJourneyByCustomerId(String id) {

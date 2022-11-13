@@ -16,8 +16,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.concurrent.ConcurrentHashMap;
-
 @Service
 public class UserService {
     @Autowired
@@ -31,9 +29,6 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder bCryptPasswordEncoder;
-
-    @Autowired
-    ConcurrentHashMap<Long, DriverLocationFlag> driverLocationMap;
 
     private static final String SCHEMA_NAME = "user";
 
@@ -85,7 +80,7 @@ public class UserService {
         Long idInLong = Long.parseLong(id);
         var rawUserOpt = userRepository.findById(idInLong);
         if (rawUserOpt.isEmpty()) {
-            throw new NotFoundException("Driver is not found");
+            throw new NotFoundException("User is not found");
         }
         User user = rawUserOpt.get().toUser();
         if (rawUserOpt.get().getIsDriver()) {
@@ -153,13 +148,19 @@ public class UserService {
         rawUser = userRepository.saveAndFlush(rawUser);
 
         if (rawUser.getIsDriver()) {
-            var vehicleOpt = vehicleRepository.findFirstByDriverIdAndType(rawUser.getId(), request.getVehicleInfo().getType());
+            var vehicleOpt = vehicleRepository.findFirstByDriverId(rawUser.getId());
+            RawVehicle rawVehicle;
             if (vehicleOpt.isEmpty()) {
-                throw new NotFoundException("Vehicle with given type is not found");
+                rawVehicle = RawVehicle.builder()
+                        .driverId(rawUser.getId())
+                        .type(request.getVehicleInfo().getType())
+                        .controlNumber(request.getVehicleInfo().getControlNumber())
+                        .build();
+            } else {
+                rawVehicle = vehicleOpt.get();
+                rawVehicle.setType(request.getVehicleInfo().getType());
+                rawVehicle.setControlNumber(request.getVehicleInfo().getControlNumber());
             }
-            //prevent updating vehicle type
-            RawVehicle rawVehicle = vehicleOpt.get();
-            rawVehicle.setControlNumber(request.getVehicleInfo().getControlNumber());
             rawVehicle = vehicleRepository.saveAndFlush(rawVehicle);
             request.setVehicleInfo(rawVehicle.toVehicle());
         }
