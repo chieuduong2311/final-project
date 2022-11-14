@@ -37,10 +37,10 @@ public class RawCall extends Auditable {
     @Column(name = "vehicle_type", nullable = false)
     private VehicleType vehicleType;
 
-    @Column(name = "origin", nullable = false)
+    @Column(name = "origin", nullable = false, columnDefinition="varchar(3000)")
     private String origin;
 
-    @Column(name = "destination", nullable = false)
+    @Column(name = "destination", nullable = false, columnDefinition="varchar(3000)")
     private String destination;
 
     @Column(name = "date_time", nullable = false)

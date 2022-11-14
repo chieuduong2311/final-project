@@ -30,10 +30,10 @@ public class RawJourney extends Auditable {
     @Column(name = "driver_id")
     private Long driverId;
 
-    @Column(name = "origin", nullable = false)
+    @Column(name = "origin", nullable = false, columnDefinition="varchar(3000)")
     private String origin;
 
-    @Column(name = "destination", nullable = false)
+    @Column(name = "destination", nullable = false, columnDefinition="varchar(3000)")
     private String destination;
 
     @Enumerated(EnumType.STRING)
@@ -66,7 +66,7 @@ public class RawJourney extends Auditable {
     @Column(name = "payment_method")
     private PaymentMethod paymentMethod;
 
-    @Column(name = "point_code")
+    @Column(name = "point_code", columnDefinition="varchar(3000)")
     private String pointCode;
 
 }

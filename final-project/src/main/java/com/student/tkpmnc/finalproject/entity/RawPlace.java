@@ -19,7 +19,7 @@ public class RawPlace {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "place_id", nullable = false)
+    @Column(name = "place_id", nullable = false, columnDefinition="varchar(3000)")
     private String placeId;
 
     @Column(name = "lat")
@@ -31,7 +31,7 @@ public class RawPlace {
     @Column(name = "place_name")
     private String placeName;
 
-    @Column(name = "full_address", nullable = false)
+    @Column(name = "full_address", nullable = false, columnDefinition="varchar(3000)")
     private String fullAddressInString;
 
     @Column(name = "is_deleted", nullable = false)
