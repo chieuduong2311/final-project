@@ -48,7 +48,7 @@
           "type": "string"
         },
         "placeName": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "fullAddressInString": {
           "type": "string"
@@ -71,7 +71,7 @@
           "type": "string"
         },
         "placeName": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "fullAddressInString": {
           "type": "string"
