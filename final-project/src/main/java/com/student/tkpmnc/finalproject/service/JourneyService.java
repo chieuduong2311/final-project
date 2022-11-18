@@ -18,6 +18,8 @@ import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.*;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import com.student.tkpmnc.finalproject.service.socketio.server.JourneyModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -70,8 +72,11 @@ public class JourneyService {
 
     private static final String SCHEMA_NAME = "journey";
 
+    private static final Logger log = LoggerFactory.getLogger(JourneyService.class);
+
     @Transactional
     public Journey createJourney(Journey request) {
+        log.info("createJourney received request: {}", request);
         schemaHelper.validate(SCHEMA_NAME, request);
         placeHelper.savePlaceIfNotExisted(request.getDestination());
         placeHelper.savePlaceIfNotExisted(request.getOrigin());
@@ -101,11 +106,13 @@ public class JourneyService {
         request.status(JourneyStatus.INITIALIZED)
                 .id(journey.getId())
                 .startDateTime(journey.getStartDateTime());
+        log.info("createJourney returned: {}", request);
         return request;
     }
 
     @Transactional
     public void assignDriver(String id, String driverId) {
+        log.info("assignDriver received request: journeyId: {} - driverId: {}", id, driverId);
         var driverIdInLong = Long.parseLong(driverId);
         var journey = journeyRepository.findById(Long.parseLong(id));
         if (journey.isEmpty()) {
@@ -138,10 +145,12 @@ public class JourneyService {
                 .type(CustomerMessageType.SUCCESS_START)
                 .build();
         journeyModule.sendEvent(message, "customers-noti");
+        log.info("assignDriver returned: journeyId: {} - driverId: {}", id, driverId);
     }
 
     @Transactional
     public void cancelJourney(String id, String reason) {
+        log.info("cancelJourney received request: {} - {}", id, reason);
         var journey = journeyRepository.findById(Long.parseLong(id));
         if (journey.isEmpty()) {
             throw new NotFoundException("Journey is not existed");
@@ -155,10 +164,12 @@ public class JourneyService {
         journey.get().setReason(reason);
         journey.get().setEndDateTime(new Date().getTime());
         journeyRepository.saveAndFlush(journey.get());
+        log.info("cancelJourney returned: {} - {}", id, reason);
     }
 
     @Transactional
     public void endJourney(String id) {
+        log.info("endJourney received request: {}", id);
         var journeyOpt = journeyRepository.findById(Long.parseLong(id));
         if (journeyOpt.isEmpty()) {
             throw new NotFoundException("Journey is not existed");
@@ -189,15 +200,18 @@ public class JourneyService {
                 .type(CustomerMessageType.SUCCESS_FINISH)
                 .build();
         journeyModule.sendEvent(message, "finish-journey");
+        log.info("endJourney returned: {}", id);
     }
 
     @Transactional
     public Journey getJourneyById(String id) {
+        log.info("getJourneyById received request: {}", id);
         var journeyId = Long.parseLong(id);
         var journey = journeyRepository.findById(journeyId);
         if (journey.isEmpty()) {
             throw new NotFoundException("Journey is not existed");
         }
+        log.info("getJourneyById returned: {}", journey.get());
         return toJourney(journey.get());
     }
 
@@ -226,6 +240,7 @@ public class JourneyService {
 
     @Transactional
     public void findDriver(String id) {
+        log.info("findDriver received request: {}", id);
         var journeyId = Long.parseLong(id);
         var journey = journeyRepository.findById(journeyId);
         if (journey.isEmpty()) {
@@ -277,23 +292,32 @@ public class JourneyService {
                 .journey(toJourney(journey.get()))
                 .build();
         journeyModule.sendEvent(message, "drivers");
+        log.info("findDriver returned: {} - list drivers: {}", id, driverIds);
     }
 
+    @Transactional
     public Journey getInProgressJourneyByCustomerId(String id) {
+        log.info("getInProgressJourneyByCustomerId received request: {}", id);
         var idInLong = Long.parseLong(id);
         var journeyOpt = journeyRepository.findInProgressJourneyByCustomerId(idInLong);
         if (journeyOpt.isEmpty()) {
+            log.info("getInProgressJourneyByCustomerId returned null - {}", id);
             return null;
         }
+        log.info("getInProgressJourneyByCustomerId returned: {}", journeyOpt.get());
         return toJourney(journeyOpt.get());
     }
 
+    @Transactional
     public Journey getInProgressJourneyByDriverId(String id) {
+        log.info("getInProgressJourneyByDriverId received request: {}", id);
         var idInLong = Long.parseLong(id);
         var journeyOpt = journeyRepository.findInProgressJourneyByDriverId(idInLong);
         if (journeyOpt.isEmpty()) {
+            log.info("getInProgressJourneyByDriverId returned null - {}", id);
             return null;
         }
+        log.info("getInProgressJourneyByDriverId returned: {}", journeyOpt.get());
         return toJourney(journeyOpt.get());
     }
 }

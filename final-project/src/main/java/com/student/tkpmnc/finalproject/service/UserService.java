@@ -9,8 +9,9 @@ import com.student.tkpmnc.finalproject.exception.NotFoundException;
 import com.student.tkpmnc.finalproject.exception.RequestException;
 import com.student.tkpmnc.finalproject.repository.UserRepository;
 import com.student.tkpmnc.finalproject.repository.VehicleRepository;
-import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
 import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,10 +31,13 @@ public class UserService {
     @Autowired
     private PasswordEncoder bCryptPasswordEncoder;
 
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     private static final String SCHEMA_NAME = "user";
 
     @Transactional
     public User createUser(User request) {
+        log.info("createUser received request: {}", request);
         schemaHelper.validate(SCHEMA_NAME, request);
         if (userRepository.findFirstByPhone(request.getPhone()).isPresent()) {
             throw new RequestException("This phone is belonged to another driver, invalid request");
@@ -61,6 +65,7 @@ public class UserService {
         request.id(user.getId())
                 .userType(user.getUserType())
                 .userStatus(user.getUserStatus());
+        log.info("createUser returned: {}", request);
         return request;
     }
 
@@ -73,6 +78,7 @@ public class UserService {
         }
         rawUserOpt.get().setIsDeleted(true);
         userRepository.saveAndFlush(rawUserOpt.get());
+        log.info("deleteUser returned OK: {}", id);
     }
 
     @Transactional
@@ -90,6 +96,7 @@ public class UserService {
             }
             user.vehicleInfo(vehicleOpt.get().toVehicle());
         }
+        log.info("getUserById returned: {}", user);
         return user;
     }
 
@@ -99,6 +106,7 @@ public class UserService {
         if (rawUserOpt.isEmpty()) {
             return null;
         }
+        log.info("getUserByUsername returned: {}", rawUserOpt.get());
         return rawUserOpt.get();
     }
 
@@ -116,11 +124,13 @@ public class UserService {
             }
             user.vehicleInfo(vehicleOpt.get().toVehicle());
         }
+        log.info("getUserByPhone returned: {}", user);
         return user;
     }
 
     @Transactional
     public User updateUser(String id, User request) {
+        log.info("updateUser received request: {} - {}", id, request);
         Long idInLong = Long.parseLong(id);
         var rawUserOpt = userRepository.findById(idInLong);
         if (rawUserOpt.isEmpty()) {
@@ -169,6 +179,7 @@ public class UserService {
                 .username(rawUser.getUsername())
                 .userType(rawUser.getUserType())
                 .userStatus(rawUser.getUserStatus());
+        log.info("updateUser returned: {}", request);
         return request;
     }
 

@@ -5,6 +5,8 @@ import com.student.tkpmnc.finalproject.api.model.Place;
 import com.student.tkpmnc.finalproject.entity.RawCall;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
 import com.student.tkpmnc.finalproject.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +23,21 @@ public class CustomerService {
     @Autowired
     CallRepository callRepository;
 
+    private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
+
     @Transactional
     public List<Place> getMostPlaces(String phone) {
+        log.info("getMostPlaces received request: {}", phone);
         var listRawPlace = placeRepository.findFiveMostLocationByPhone(phone);
+        log.info("getMostPlaces returned: {}", listRawPlace);
         return listRawPlace.stream().map(RawPlace::toPlace).collect(Collectors.toList());
     }
 
     @Transactional
     public List<Call> getRecentCalls(String phone) {
+        log.info("getRecentCalls received request: {}", phone);
         List<RawCall> rawCallList = callRepository.getFiveRecentCallsByPhone(phone);
+        log.info("getRecentCalls returned: {}", rawCallList);
         return rawCallList.stream().map(this::convertToCall).collect(Collectors.toList());
     }
 

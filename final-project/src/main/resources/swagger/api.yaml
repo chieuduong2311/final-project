@@ -672,6 +672,8 @@ definitions:
         example: 4.8
       vehicleInfo:
         $ref: '#/definitions/Vehicle'
+      isOnline:
+        type: boolean
     required:
       - username
       - firstName

@@ -73,6 +73,7 @@ public class RawUser extends Auditable {
             .lastName(lastName)
             .personalId(personalId)
             .overallRate(overallRate)
+            .isOnline(isOnline)
             .username(username);
         return user;
     }

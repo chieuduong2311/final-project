@@ -10,6 +10,8 @@ import com.student.tkpmnc.finalproject.repository.UserRepository;
 import com.student.tkpmnc.finalproject.service.helper.SchemaHelper;
 import com.student.tkpmnc.finalproject.repository.VehicleRepository;
 import com.student.tkpmnc.finalproject.service.dto.DriverLocationFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,8 +38,11 @@ public class DriverService {
 
     private static final String SCHEMA_NAME = "driver";
 
+    private static final Logger log = LoggerFactory.getLogger(DriverService.class);
+
     @Transactional
     public void register(String id, User request) {
+        log.info("register received request: {} - {}", id, request);
         schemaHelper.validate(SCHEMA_NAME, request);
         Long idInLong = Long.parseLong(id);
         var rawUserOpt = userRepository.findById(idInLong);
@@ -60,10 +65,12 @@ public class DriverService {
         rawUserOpt.get().setUserType(UserType.DRIVER);
         rawUserOpt.get().setPersonalId(request.getPersonalId());
         userRepository.saveAndFlush(rawUserOpt.get());
+        log.info("register returned: {} ", rawUserOpt.get());
     }
 
     @Transactional
     public void switchToOnlineDriver(String id) {
+        log.info("switchToOnlineDriver received request: {}", id);
         Long idInLong = Long.parseLong(id);
         var rawDriverOpt = userRepository.findById(idInLong);
         if (rawDriverOpt.isEmpty()) {
@@ -72,10 +79,12 @@ public class DriverService {
 
         rawDriverOpt.get().setOnline(true);
         userRepository.saveAndFlush(rawDriverOpt.get());
+        log.info("switchToOnlineDriver returned OK: {}", id);
     }
 
     @Transactional
     public void switchToOfflineDriver(String id) {
+        log.info("switchToOfflineDriver received request: {}", id);
         Long idInLong = Long.parseLong(id);
         var rawDriverOpt = userRepository.findById(idInLong);
         if (rawDriverOpt.isEmpty()) {
@@ -87,9 +96,11 @@ public class DriverService {
         if (driverLocationMap.get(idInLong) != null) {
             driverLocationMap.remove(idInLong);
         }
+        log.info("switchToOfflineDriver returned OK: {} - {}", id, driverLocationMap);
     }
 
     public void syncLocation(String id, DriverLocation location) {
+        log.info("syncLocation received request: {} - {}", id, location);
         Long idInLong = Long.parseLong(id);
         if (driverLocationMap.containsKey(idInLong)) {
             driverLocationMap.get(idInLong).setDriverLocation(location);
@@ -104,6 +115,7 @@ public class DriverService {
                 .distanceValue(MAX_DISTANCE)
                 .build();
         driverLocationMap.put(idInLong, flag);
+        log.info("syncLocation returned: {} - {}", id, driverLocationMap);
     }
 
 }
