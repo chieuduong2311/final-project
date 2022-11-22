@@ -24,7 +24,7 @@ public class Location {
     @Column(name = "phone")
     private String phone;
 
-    @Column(name = "place_id", nullable = false)
+    @Column(name = "place_id", nullable = false, columnDefinition="varchar(3000)")
     private String placeId;
 
     @Column(name = "times")
