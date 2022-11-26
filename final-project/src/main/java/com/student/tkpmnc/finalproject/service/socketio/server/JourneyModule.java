@@ -34,6 +34,7 @@ public class JourneyModule {
 
     public void sendEvent(Object message, String channelName) {
         log.info("Broadcast message '{}'", message);
+        log.info("Client list {}", this.namespace.getBroadcastOperations().getClients());
         namespace.getBroadcastOperations().sendEvent(channelName, message);
     }
 

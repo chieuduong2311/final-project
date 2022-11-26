@@ -138,19 +138,22 @@ public class UserService {
         }
         schemaHelper.validate(SCHEMA_NAME, request);
 
-        if (userRepository.findFirstByPhone(request.getPhone()).isPresent()) {
-            throw new RequestException("This phone is belonged to another user, invalid request");
+        if (!rawUserOpt.get().getPhone().equals(request.getPhone())) {
+            if (userRepository.findFirstByPhone(request.getPhone()).isPresent()) {
+                throw new RequestException("This phone is belonged to another user, invalid request");
+            }
         }
 
-        if (userRepository.findFirstByUsername(request.getUsername()).isPresent()) {
-            throw new RequestException("This username is belonged to another user, invalid request");
-        }
+
+//        if (userRepository.findFirstByUsername(request.getUsername()).isPresent()) {
+//            throw new RequestException("This username is belonged to another user, invalid request");
+//        }
 
         //prevent updating username
         RawUser rawUser = rawUserOpt.get();
         rawUser.setPersonalId(request.getPersonalId());
-        String pw = bCryptPasswordEncoder.encode(request.getPassword());
-        rawUser.setPassword(pw);
+//        String pw = bCryptPasswordEncoder.encode(request.getPassword());
+//        rawUser.setPassword(pw);
         rawUser.setFirstName(request.getFirstName());
         rawUser.setLastName(request.getLastName());
         rawUser.setPhone(request.getPhone());
