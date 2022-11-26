@@ -278,6 +278,7 @@ public class JourneyService {
         List<DriverLocationFlag> flags = new ArrayList<>(driverLocationMap.values());
         Collections.sort(flags, Comparator.comparing(DriverLocationFlag::getDistanceValue));
 
+        log.info("after sorting distance: {}", flags);
         List<Long> driverIds = new ArrayList<>();
 
         while (countNumberOfDriver < flags.size() && countNumberOfDriver < 5) {

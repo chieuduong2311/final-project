@@ -115,7 +115,6 @@ public class DriverService {
                 .distanceValue(MAX_DISTANCE)
                 .build();
         driverLocationMap.put(idInLong, flag);
-        log.info("syncLocation returned: {} - {}", id, driverLocationMap);
     }
 
 }
