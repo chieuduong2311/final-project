@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class JourneyDelegateImpl implements JourneyApiDelegate {
 
@@ -41,6 +43,11 @@ public class JourneyDelegateImpl implements JourneyApiDelegate {
     public ResponseEntity<Void> findDriver(String id) {
         journeyService.findDriver(id);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<List<Journey>> getAllJourneyByUser(String id) {
+        return new ResponseEntity<>(journeyService.getAllJourneyByUser(id), HttpStatus.OK);
     }
 
     @Override

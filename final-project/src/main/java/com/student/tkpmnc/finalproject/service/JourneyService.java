@@ -2,6 +2,7 @@ package com.student.tkpmnc.finalproject.service;
 
 import com.student.tkpmnc.finalproject.api.model.Journey;
 import com.student.tkpmnc.finalproject.api.model.JourneyStatus;
+import com.student.tkpmnc.finalproject.api.model.UserType;
 import com.student.tkpmnc.finalproject.entity.Location;
 import com.student.tkpmnc.finalproject.entity.RawJourney;
 import com.student.tkpmnc.finalproject.entity.RawPlace;
@@ -27,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class JourneyService {
@@ -284,9 +286,6 @@ public class JourneyService {
             }
             countNumberOfDriver++;
         }
-//        if (countNumberOfDriver == 0) {
-//            throw new NoAvailableDriverException("Cannot find any available drivers now.");
-//        }
         var message = DriverBroadcastMessage.builder()
                 .drivers(driverIds)
                 .journey(toJourney(journey.get()))
@@ -320,4 +319,22 @@ public class JourneyService {
         log.info("getInProgressJourneyByDriverId returned: {}", journeyOpt.get());
         return toJourney(journeyOpt.get());
     }
+
+    @Transactional
+    public List<Journey> getAllJourneyByUser(String id) {
+        log.info("getAllJourneyByUser received request: {}", id);
+        var idInLong = Long.parseLong(id);
+        var user = userRepository.getById(idInLong);
+        List<RawJourney> journeys;
+        if (user.getUserType() == UserType.DRIVER) {
+            journeys = journeyRepository.findAllByDriverId(idInLong);
+        } else {
+            journeys = journeyRepository.findAllByCustomerId(idInLong);
+        }
+
+        List<Journey> result = journeys.stream().map(this::toJourney).collect(Collectors.toList());
+        log.info("getAllJourneyByUser returned {} - number of journey: {}", id, result.size());
+        return result;
+    }
+
 }

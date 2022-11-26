@@ -452,6 +452,31 @@ paths:
         '404':
           description: Journey not found
 
+  /journey/history/{id}:
+    get:
+      tags:
+        - journey
+      summary: Get journey history of user
+      description: This can only be done by the logged in user.
+      operationId: getAllJourneyByUser
+      parameters:
+        - name: id
+          in: path
+          description: id of user
+          required: true
+          type: string
+      responses:
+        default:
+          description: successful operation
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Journey'
+        '400':
+          description: Invalid request
+        '404':
+          description: User not found
+
   /journey/{id}/cancel:
     put:
       tags:
